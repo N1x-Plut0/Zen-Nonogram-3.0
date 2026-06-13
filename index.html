@@ -1,0 +1,4991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Zen Nonogram · 禅</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --moss: #668866;
+  --paper: #ccccaa;
+  --sage: #99aa99;
+  --eucalyptus: #778877;
+  --brown: #aa8877;
+  --sand: #ccaa88;
+  --ink: #2a3528;
+  --ink-soft: rgba(42, 53, 40, 0.55);
+  --ink-faint: rgba(42, 53, 40, 0.22);
+  --paper-warm: #d4d2b1;
+  --paper-deep: #b8b896;
+  --paper-shadow: rgba(80, 70, 50, 0.18);
+  --moss-deep: #4a6448;
+  --gold: #a89760;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+body {
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(102,136,102,0.07) 0%, transparent 55%),
+    radial-gradient(circle at 88% 82%, rgba(119,136,119,0.09) 0%, transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(168,151,96,0.04) 0%, transparent 70%);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.35 0 0 0 0 0.2 0 0 0 0.08 0'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>");
+  mix-blend-mode: multiply;
+}
+
+#app {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  padding: 28px 24px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* HEADER */
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  padding-bottom: 18px;
+  margin-bottom: 36px;
+  border-bottom: 1px solid var(--ink-faint);
+  position: relative;
+}
+
+.brand::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 60px;
+  height: 1px;
+  background: var(--moss);
+}
+
+.brand-mark {
+  font-family: 'Shippori Mincho B1', serif;
+  font-weight: 800;
+  font-size: 42px;
+  color: var(--moss-deep);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.brand-mark .kanji {
+  font-size: 36px;
+  color: var(--moss);
+  margin-right: 6px;
+  vertical-align: 2px;
+}
+
+.brand-tag {
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.brand-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.brand-username {
+  font-family: 'Shippori Mincho B1', serif;
+  font-size: 14px;
+  color: var(--moss-deep);
+  opacity: 0.8;
+}
+
+.brand-signout {
+  font-size: 13px;
+  padding: 4px 10px;
+  opacity: 0.7;
+}
+
+/* AUTH */
+
+.auth-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 12px;
+  padding: 32px 16px;
+}
+
+.auth-title {
+  font-family: 'Shippori Mincho B1', serif;
+  font-size: 28px;
+  color: var(--moss-deep);
+  margin: 0;
+}
+
+.auth-sub {
+  color: var(--ink-soft);
+  font-size: 15px;
+  margin: 0 0 12px;
+  font-style: italic;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.auth-input {
+  padding: 10px 14px;
+  border: 1px solid var(--ink-faint);
+  background: var(--paper-mid);
+  border-radius: 6px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.auth-input:focus {
+  border-color: var(--moss);
+}
+
+.auth-submit {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  margin-top: 4px;
+}
+
+.auth-switch {
+  text-align: center;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+.auth-guest {
+  text-align: center;
+  font-size: 13px;
+  opacity: 0.55;
+  margin-top: 4px;
+}
+
+.auth-error {
+  min-height: 20px;
+  color: #a05540;
+  font-size: 13px;
+  text-align: center;
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .brand-mark { font-size: 32px; }
+  .brand-mark .kanji { font-size: 28px; }
+  .brand-tag { display: none; }
+}
+
+/* LIBRARY */
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.section-title {
+  font-family: 'Shippori Mincho B1', serif;
+  font-weight: 500;
+  font-size: 28px;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+}
+
+.section-title .accent {
+  color: var(--moss);
+  font-weight: 700;
+  margin-right: 8px;
+}
+
+.section-sub {
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 16px;
+  margin-left: 8px;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+  background: rgba(119,136,119,0.15);
+  padding: 4px;
+  border-radius: 2px;
+}
+
+.filter-tab {
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.25s;
+  border-radius: 1px;
+}
+
+.filter-tab:hover { color: var(--ink); }
+
+.filter-tab.active {
+  background: var(--paper);
+  color: var(--moss-deep);
+  box-shadow: 0 1px 3px var(--paper-shadow);
+}
+
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.level-card {
+  background: var(--paper-warm);
+  border: 1px solid var(--ink-faint);
+  border-radius: 2px;
+  padding: 18px 18px 16px;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.3s,
+              border-color 0.3s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 220px;
+}
+
+.level-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px var(--paper-shadow);
+  border-color: var(--moss);
+}
+
+.level-card.solved::before {
+  content: '✓';
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  color: var(--moss);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.level-card.compound {
+  border-color: var(--gold);
+  background: linear-gradient(160deg, var(--paper-warm) 0%, #d6d4b8 100%);
+}
+
+.level-card.compound::before {
+  content: '◴';
+}
+
+.level-card.compound.all-done::before {
+  content: '✦';
+  color: var(--gold);
+  font-size: 20px;
+}
+
+.preview {
+  background: var(--paper);
+  padding: 14px;
+  border-radius: 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 110px;
+  box-shadow: inset 0 1px 3px rgba(80,70,50,0.1);
+}
+
+.preview svg { display: block; max-width: 100%; height: auto; }
+
+.level-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.level-name {
+  font-family: 'Shippori Mincho B1', serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.level-size {
+  font-size: 13px;
+  color: var(--ink-soft);
+  font-style: italic;
+  white-space: nowrap;
+}
+
+.level-badge {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.level-card .delete-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+  padding: 4px;
+}
+
+.level-card .edit-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 56px;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+  padding: 4px;
+}
+
+.level-card:hover .delete-btn,
+.level-card:hover .edit-btn { opacity: 1; }
+.level-card .delete-btn:hover { color: #a85040; }
+.level-card .edit-btn:hover { color: var(--moss-deep); }
+
+.create-card {
+  background: transparent;
+  border: 2px dashed var(--eucalyptus);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--moss-deep);
+  min-height: 220px;
+  font-family: 'Shippori Mincho B1', serif;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.create-card:hover {
+  border-color: var(--moss);
+  background: rgba(102,136,102,0.05);
+  transform: translateY(-3px);
+}
+
+.create-card .plus {
+  font-size: 40px;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--moss);
+}
+
+.create-card .label {
+  font-size: 17px;
+  letter-spacing: 0.05em;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--ink-soft);
+  font-style: italic;
+  font-size: 18px;
+}
+
+/* BACK BUTTON */
+
+.back-btn {
+  background: transparent;
+  border: none;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 6px 0;
+  margin-bottom: 16px;
+  letter-spacing: 0.04em;
+  transition: color 0.2s, transform 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-btn::before {
+  content: '←';
+  font-size: 20px;
+  transition: transform 0.2s;
+}
+
+.back-btn:hover { color: var(--moss-deep); }
+.back-btn:hover::before { transform: translateX(-3px); }
+
+/* PLAY VIEW */
+
+.play-head {
+  margin-bottom: 28px;
+}
+
+.play-title {
+  font-family: 'Shippori Mincho B1', serif;
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--ink);
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.play-title .size-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 16px;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+
+.play-title .crumb {
+  color: var(--ink-soft);
+  font-size: 18px;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.puzzle-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+}
+
+.puzzle-wrap {
+  display: inline-block;
+  padding: 24px;
+  background: var(--paper-warm);
+  border: 1px solid var(--ink-faint);
+  box-shadow: 0 4px 16px var(--paper-shadow);
+  max-width: 100%;
+  overflow: auto;
+}
+
+.puzzle-grid {
+  display: grid;
+  font-family: 'Shippori Mincho B1', serif;
+}
+
+.clue-cell {
+  background: transparent;
+  font-size: var(--clue-size);
+  font-weight: 600;
+  display: flex;
+  padding: 4px 2px;
+  min-width: var(--cell-size);
+  min-height: var(--cell-size);
+  gap: 2px;
+  transition: background 0.15s;
+}
+
+.clue-cell.row {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 2px 6px;
+}
+
+.clue-cell.col {
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.clue-num {
+  display: block;
+  line-height: 1.1;
+  padding: 0 2px;
+  transition: opacity 0.3s;
+  color: var(--ink);
+}
+
+.clue-num.done { opacity: 0.22; }
+
+.clue-cell.highlighted {
+  background: rgba(102,136,102,0.1);
+}
+
+.corner { background: transparent; }
+
+.cell {
+  width: var(--cell-size);
+  height: var(--cell-size);
+  background: var(--paper);
+  border: 1px solid var(--paper-deep);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.08s, filter 0.08s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cell:hover { filter: brightness(0.92); }
+
+.cell.filled {
+  border-color: rgba(0,0,0,0.25);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06),
+              inset 1px 1px 2px rgba(255,255,255,0.08);
+}
+
+.cell.marked::after {
+  content: '✕';
+  color: var(--eucalyptus);
+  font-size: calc(var(--cell-size) * 0.55);
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.cell.auto-marked::after {
+  color: var(--ink-soft);
+  opacity: 0.55;
+}
+
+.cell.b-right { border-right: 2px solid var(--ink); }
+.cell.b-bottom { border-bottom: 2px solid var(--ink); }
+
+.cell.row-hover, .cell.col-hover {
+  box-shadow: inset 0 0 0 100px rgba(168,151,96,0.16);
+}
+.cell.filled.row-hover, .cell.filled.col-hover {
+  filter: brightness(0.88);
+}
+
+/* PALETTE */
+
+.palette-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 10px 14px;
+  background: rgba(119,136,119,0.15);
+  border-radius: 2px;
+}
+
+.palette-swatch {
+  width: 38px;
+  height: 38px;
+  border-radius: 2px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+  background: var(--paper);
+}
+
+.palette-swatch:hover {
+  transform: translateY(-2px);
+}
+
+.palette-swatch.active {
+  border-color: var(--ink);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px var(--paper-shadow);
+}
+
+.palette-swatch.mark {
+  background: var(--paper);
+  border: 2px solid var(--paper-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.palette-swatch.mark::after {
+  content: '✕';
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--eucalyptus);
+  font-size: 22px;
+}
+
+.palette-swatch.mark.active { border-color: var(--ink); }
+
+.palette-swatch.erase {
+  background: var(--paper);
+  border: 2px dashed var(--eucalyptus);
+  position: relative;
+}
+
+.palette-swatch.erase::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid var(--eucalyptus);
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+.palette-swatch.erase.active {
+  border-color: var(--ink);
+  border-style: solid;
+}
+
+.palette-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--ink-faint);
+  margin: 0 4px;
+}
+
+/* CONTROLS */
+
+.controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn {
+  background: transparent;
+  border: 1px solid var(--eucalyptus);
+  color: var(--moss-deep);
+  font-family: 'Shippori Mincho B1', serif;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 9px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 1px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn:hover {
+  background: var(--moss);
+  color: var(--paper);
+  border-color: var(--moss);
+}
+
+.btn.primary {
+  background: var(--moss);
+  color: var(--paper);
+  border-color: var(--moss);
+}
+
+.btn.primary:hover {
+  background: var(--moss-deep);
+  border-color: var(--moss-deep);
+}
+
+.btn.subtle {
+  border-color: var(--ink-faint);
+  color: var(--ink-soft);
+}
+
+.btn.subtle:hover {
+  border-color: var(--ink-soft);
+  color: var(--ink);
+  background: transparent;
+}
+
+.btn.danger {
+  border-color: #a85040;
+  color: #a85040;
+}
+
+.btn.danger:hover {
+  background: #a85040;
+  color: var(--paper);
+}
+
+.btn.gold {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.btn.gold:hover { background: var(--gold); color: var(--paper-warm); border-color: var(--gold); }
+
+/* toggle button */
+.btn.toggle .dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ink-faint);
+  transition: background 0.2s;
+}
+
+.btn.toggle.on .dot { background: var(--moss); box-shadow: 0 0 6px rgba(102,136,102,0.6); }
+.btn.toggle.on { border-color: var(--moss); color: var(--moss-deep); }
+
+/* WIN OVERLAY */
+
+.win-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(204, 204, 170, 0.92);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fade-in 0.6s ease;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.win-card {
+  background: var(--paper-warm);
+  border: 1px solid var(--moss);
+  padding: 48px 60px;
+  text-align: center;
+  box-shadow: 0 16px 50px rgba(80,70,50,0.25);
+  max-width: 460px;
+  animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes rise {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.win-card .kanji-big {
+  font-family: 'Shippori Mincho B1', serif;
+  font-size: 80px;
+  font-weight: 800;
+  color: var(--moss);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.win-card h2 {
+  font-family: 'Shippori Mincho B1', serif;
+  font-weight: 500;
+  font-size: 30px;
+  color: var(--ink);
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+}
+
+.win-card p {
+  color: var(--ink-soft);
+  font-style: italic;
+  font-size: 17px;
+  margin-bottom: 28px;
+}
+
+.win-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* COMPOUND SELECTOR */
+
+.compound-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+}
+
+.compound-intro {
+  text-align: center;
+  max-width: 520px;
+  color: var(--ink-soft);
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.sub-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(160px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 520px;
+  padding: 22px;
+  background: var(--paper-warm);
+  border: 1px solid var(--ink-faint);
+  box-shadow: 0 4px 16px var(--paper-shadow);
+  position: relative;
+}
+
+.sub-card {
+  background: var(--paper);
+  border: 1px solid var(--paper-deep);
+  border-radius: 2px;
+  padding: 18px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-height: 200px;
+}
+
+.sub-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--moss);
+  box-shadow: 0 6px 16px var(--paper-shadow);
+}
+
+.sub-card.solved {
+  border-color: var(--moss);
+  background: linear-gradient(160deg, var(--paper) 0%, rgba(102,136,102,0.12) 100%);
+}
+
+.sub-card .sub-kanji {
+  font-family: 'Shippori Mincho B1', serif;
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--moss-deep);
+}
+
+.sub-card.solved .sub-kanji {
+  color: var(--moss);
+}
+
+.sub-card .sub-name {
+  font-family: 'Shippori Mincho B1', serif;
+  font-size: 18px;
+  color: var(--ink);
+  letter-spacing: 0.04em;
+}
+
+.sub-card .sub-preview {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.sub-card .sub-preview svg { max-width: 100%; height: auto; }
+
+.sub-card .sub-status {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.sub-card.solved .sub-status {
+  color: var(--moss);
+  font-weight: 600;
+}
+
+.sub-card .sub-check {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  color: var(--moss);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.progress-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 18px;
+  background: var(--paper-warm);
+  border: 1px solid var(--ink-faint);
+  border-radius: 22px;
+  font-family: 'Shippori Mincho B1', serif;
+  font-size: 15px;
+  color: var(--ink);
+  letter-spacing: 0.05em;
+}
+
+.progress-pill .count {
+  color: var(--moss-deep);
+  font-weight: 700;
+}
+
+.progress-pill.complete {
+  border-color: var(--gold);
+  background: linear-gradient(135deg, var(--paper-warm), #e2dec0);
+}
+
+.progress-pill.complete .count { color: var(--gold); }
+
+/* COMBINED REVEAL */
+
+.reveal-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+.reveal-frame {
+  padding: 28px;
+  background: var(--paper-warm);
+  border: 2px solid var(--gold);
+  box-shadow: 0 8px 28px rgba(80,70,50,0.25);
+  animation: reveal-rise 0.9s cubic-bezier(0.15, 0.85, 0.2, 1);
+}
+
+@keyframes reveal-rise {
+  from { transform: translateY(30px) scale(0.97); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.reveal-frame .combined-art {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background: var(--paper);
+}
+
+.reveal-caption {
+  font-family: 'Shippori Mincho B1', serif;
+  font-size: 24px;
+  color: var(--ink);
+  text-align: center;
+}
+
+.reveal-caption .kanji-mark {
+  font-size: 32px;
+  color: var(--gold);
+  margin-right: 10px;
+  vertical-align: -2px;
+}
+
+/* EDITOR */
+
+.editor-head {
+  display: flex;
+  gap: 22px;
+  margin-bottom: 24px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.input-group { display: flex; flex-direction: column; gap: 6px; }
+
+.input-group label {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.text-input {
+  font-family: 'Shippori Mincho B1', serif;
+  font-size: 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--eucalyptus);
+  color: var(--ink);
+  padding: 6px 0;
+  min-width: 240px;
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.text-input:focus { border-bottom-color: var(--moss); }
+.text-input::placeholder { color: var(--ink-faint); font-style: italic; }
+
+.size-picker {
+  display: flex;
+  gap: 4px;
+  background: rgba(119,136,119,0.18);
+  padding: 4px;
+  border-radius: 2px;
+}
+
+.size-btn {
+  background: transparent;
+  border: none;
+  font-family: 'Shippori Mincho B1', serif;
+  color: var(--ink-soft);
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 1px;
+  transition: all 0.2s;
+}
+
+.size-btn:hover { color: var(--ink); }
+.size-btn.active {
+  background: var(--paper);
+  color: var(--moss-deep);
+  box-shadow: 0 1px 3px var(--paper-shadow);
+}
+
+.editor-palette-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.editor-hint {
+  text-align: center;
+  color: var(--ink-soft);
+  font-style: italic;
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+
+.editor-cell {
+  width: var(--cell-size);
+  height: var(--cell-size);
+  background: var(--paper);
+  border: 1px solid var(--paper-deep);
+  cursor: pointer;
+  transition: background 0.08s;
+}
+
+.editor-cell:hover { filter: brightness(0.92); }
+
+.editor-cell.filled {
+  border-color: rgba(0,0,0,0.25);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+.editor-cell.b-right { border-right: 2px solid var(--ink); }
+.editor-cell.b-bottom { border-bottom: 2px solid var(--ink); }
+
+.editor-grid-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 22px;
+  background: var(--paper-warm);
+  border: 1px solid var(--ink-faint);
+  margin-bottom: 22px;
+  overflow: auto;
+}
+
+.editor-grid { display: grid; }
+
+/* AUTO-SAVE STATUS */
+.save-status {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--ink-soft);
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border: 1px solid transparent;
+  min-width: 100px;
+  justify-content: center;
+  opacity: 0.85;
+  transition: opacity 0.3s, color 0.3s, background 0.3s;
+}
+
+.save-status.done {
+  color: var(--moss-deep);
+  opacity: 1;
+}
+
+.save-status.done .check {
+  color: var(--moss);
+  font-weight: 700;
+}
+
+.save-status.saving .dot-saving {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink-soft);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--paper);
+  padding: 12px 26px;
+  font-family: 'Shippori Mincho B1', serif;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  z-index: 200;
+  border-radius: 1px;
+  animation: toast-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+@keyframes toast-in {
+  from { transform: translate(-50%, 20px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+/* FOOTER */
+.footer {
+  margin-top: 60px;
+  padding-top: 20px;
+  border-top: 1px solid var(--ink-faint);
+  display: flex;
+  justify-content: space-between;
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-style: italic;
+  letter-spacing: 0.04em;
+}
+
+.footer .kanji-mark {
+  font-family: 'Shippori Mincho B1', serif;
+  font-style: normal;
+  color: var(--moss);
+}
+
+@media (max-width: 500px) {
+  #app { padding: 18px 14px 60px; }
+  .puzzle-wrap { padding: 14px; }
+  .level-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+  .play-title { font-size: 24px; }
+  .section-title { font-size: 22px; }
+  .win-card { padding: 36px 30px; }
+  .editor-head { flex-direction: column; align-items: stretch; }
+  .text-input { min-width: 0; width: 100%; }
+  .palette-swatch { width: 34px; height: 34px; }
+  .sub-card { min-height: 170px; padding: 14px 10px; }
+  .sub-card .sub-kanji { font-size: 32px; }
+}
+
+.cell, .editor-cell, .btn, .size-btn, .filter-tab, .palette-swatch, .sub-card { touch-action: manipulation; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ════════════════════════════════════════════
+   ZEN NONOGRAM · compound + drag + autocross
+   ════════════════════════════════════════════ */
+
+// ── storage shim ───────────────────────────
+// The app talks to an async `window.storage` (get/set) that some host
+// environments inject. When running as a plain static page, none exists,
+// so we back it with localStorage here. This makes accounts, saved puzzles
+// and solved-progress persist across refreshes in any normal browser.
+if (typeof window !== 'undefined' && !window.storage) {
+  window.storage = {
+    async get(key) {
+      try {
+        const value = localStorage.getItem(key);
+        return value === null ? null : { value };
+      } catch (e) { return null; }
+    },
+    async set(key, value) {
+      try { localStorage.setItem(key, String(value)); } catch (e) {}
+    },
+    async delete(key) {
+      try { localStorage.removeItem(key); } catch (e) {}
+    },
+  };
+}
+
+// ── palette ────────────────────────────────
+const COLOR = {
+  moss:       '#668866',
+  eucalyptus: '#778877',
+  sage:       '#99aa99',
+  brown:      '#aa8877',
+  sand:       '#ccaa88',
+};
+
+const PALETTE_ARR = [
+  { id: 'moss',       hex: COLOR.moss,       name: 'Moss' },
+  { id: 'eucalyptus', hex: COLOR.eucalyptus, name: 'Eucalyptus' },
+  { id: 'sage',       hex: COLOR.sage,       name: 'Sage' },
+  { id: 'brown',      hex: COLOR.brown,      name: 'Earth' },
+  { id: 'sand',       hex: COLOR.sand,       name: 'Sand' },
+];
+
+const CHAR = {
+  M: COLOR.moss,
+  E: COLOR.eucalyptus,
+  S: COLOR.sage,
+  B: COLOR.brown,
+  T: COLOR.sand,
+};
+
+function parseLevel(template) {
+  const lines = template.trim().split('\n').map(l => l.replace(/\s/g, ''));
+  return lines.map(line => {
+    const row = [];
+    for (const ch of line) {
+      row.push(ch === '.' ? 0 : (CHAR[ch] || 0));
+    }
+    return row;
+  });
+}
+
+// ── built-in single-image levels ───────────
+const SYSTEM_LEVELS = [
+  { id: 'sys-heart', name: 'Heart', kanji: '心', size: 5, solution: [
+    [0,1,0,1,0], [1,1,1,1,1], [1,1,1,1,1], [0,1,1,1,0], [0,0,1,0,0],
+  ]},
+  { id: 'sys-pine', name: 'Pine', kanji: '松', size: 5, solution: [
+    [0,0,1,0,0], [0,1,1,1,0], [1,1,1,1,1], [0,0,1,0,0], [0,1,1,1,0],
+  ]},
+  { id: 'sys-fish', name: 'Fish', kanji: '魚', size: 5, solution: [
+    [0,0,0,1,0], [1,1,1,1,1], [1,0,1,1,0], [1,1,1,1,1], [0,0,0,1,0],
+  ]},
+  { id: 'sys-mountain', name: 'Mountain', kanji: '山', size: 5, solution: [
+    [0,0,1,0,0], [0,1,1,1,0], [0,1,0,1,0], [1,1,1,1,1], [1,0,0,0,1],
+  ]},
+  { id: 'sys-cup', name: 'Tea Cup', kanji: '茶', size: 5, solution: [
+    [1,0,0,0,1], [1,1,1,1,1], [1,1,1,1,1], [1,1,1,1,1], [0,1,1,1,0],
+  ]},
+  { id: 'sys-flower', name: 'Flower', kanji: '花', size: 5, solution: [
+    [1,0,1,0,1], [0,1,1,1,0], [1,1,1,1,1], [0,1,1,1,0], [0,0,1,0,0],
+  ]},
+
+  { id: 'sys-moon', name: 'Moon', kanji: '月', size: 5, solution: parseLevel(`
+.TTT.
+TT...
+TT...
+TT...
+.TTT.
+`)},
+  { id: 'sys-star', name: 'Star', kanji: '星', size: 5, solution: parseLevel(`
+..T..
+.TTT.
+TTTTT
+.T.T.
+T...T
+`)},
+  { id: 'sys-cloud', name: 'Cloud', kanji: '雲', size: 5, solution: parseLevel(`
+.SS..
+SSSSS
+SSSSS
+.SSS.
+.....
+`)},
+
+  { id: 'sys-house', name: 'House', kanji: '家', size: 10, solution: [
+    [0,0,0,0,1,1,0,0,0,0], [0,0,0,1,1,1,1,0,0,0], [0,0,1,1,1,1,1,1,0,0],
+    [0,1,1,1,1,1,1,1,1,0], [1,1,1,1,1,1,1,1,1,1], [1,0,0,1,1,1,1,0,0,1],
+    [1,0,0,1,1,1,1,0,0,1], [1,0,0,1,1,1,1,0,0,1], [1,0,0,0,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,1,1,1],
+  ]},
+  { id: 'sys-lantern', name: 'Lantern', kanji: '灯', size: 10, solution: [
+    [0,0,0,1,1,1,1,0,0,0], [0,0,0,1,0,0,1,0,0,0], [0,1,1,1,1,1,1,1,1,0],
+    [1,1,1,1,1,1,1,1,1,1], [1,0,1,1,0,0,1,1,0,1], [1,0,1,1,0,0,1,1,0,1],
+    [1,1,1,1,1,1,1,1,1,1], [0,1,1,1,1,1,1,1,1,0], [0,0,0,1,0,0,1,0,0,0],
+    [0,0,0,0,1,1,0,0,0,0],
+  ]},
+  { id: 'sys-bonsai', name: 'Bonsai', kanji: '盆', size: 10, solution: [
+    [0,0,1,1,1,1,1,1,0,0], [0,1,1,1,1,1,1,1,1,0], [1,1,1,1,1,1,1,1,1,1],
+    [1,1,0,1,1,1,1,0,1,1], [0,1,1,1,1,1,1,1,1,0], [0,0,1,1,1,1,1,1,0,0],
+    [0,0,0,1,1,1,1,0,0,0], [0,0,0,0,1,1,0,0,0,0], [0,0,1,1,1,1,1,1,0,0],
+    [0,1,1,1,1,1,1,1,1,0],
+  ]},
+
+  { id: 'sys-umbrella', name: 'Umbrella', kanji: '傘', size: 10, solution: parseLevel(`
+....BB....
+...BBBB...
+..BBBBBB..
+.BBBBBBBB.
+BBBBBBBBBB
+.BBBBBBBB.
+....BB....
+....BB....
+....BB....
+....BBB...
+`)},
+  { id: 'sys-stonelantern', name: 'Stone Lantern', kanji: '燈', size: 10, solution: parseLevel(`
+....MM....
+...MMMM...
+.MMMMMMMM.
+....MM....
+..MMMMMM..
+..M....M..
+..MMMMMM..
+....MM....
+.MMMMMMMM.
+.MMMMMMMM.
+`)},
+  { id: 'sys-maple', name: 'Maple Leaf', kanji: '楓', size: 10, solution: parseLevel(`
+....B.....
+B...B...B.
+BB.BBB.BB.
+.BBBBBBBB.
+BBBBBBBBBB
+.BBBBBBBB.
+..BBBBBB..
+...BBBB...
+....BB....
+....BB....
+`)},
+
+  // 20×20 multi-color levels
+  { id: 'sys-sakura', name: 'Sakura', kanji: '桜', size: 20, solution: parseLevel(`
+....................
+....................
+....................
+..............TT....
+.............TTTT...
+.............TTTT...
+..............TT....
+....................
+....TT........BB....
+...TTTT......BB.....
+...TTTT.....BB......
+....TT.....BB.......
+..........BB..TT....
+.........BBB.TTTT...
+........BBB..TTTT...
+.......BBB....TT....
+......BBB...........
+.....BBB...TT.......
+....BBB...TTTT......
+...BBB.....TT.......
+`)},
+  { id: 'sys-fuji', name: 'Mt. Fuji', kanji: '富', size: 20, solution: parseLevel(`
+....................
+................TT..
+...............TTTT.
+...............TTTT.
+................TT..
+....................
+....................
+........SS..........
+.......SSSS.........
+......SSSSSS........
+......EEEEEEEE......
+.....EEEEEEEEEE.....
+....EEEEEEEEEEEE....
+...EEEEEEEEEEEEEE...
+..EEEEEEEEEEEEEEEE..
+.EEEEEEEEEEEEEEEEEE.
+EEEEEEEEEEEEEEEEEEEE
+....................
+....................
+....................
+`)},
+  { id: 'sys-koi', name: 'Koi', kanji: '鯉', size: 20, solution: parseLevel(`
+....................
+....................
+....................
+...........TTTT.....
+..........TBBBBT....
+.........TBBMBBBT...
+........TBBBBBBBBT..
+.......TBBBBBBBBBBT.
+......BBBBBBBBBBBBT.
+.....BBBBBBBBBBBBT..
+.....BBBBBBBBBBBB...
+......BBBBBBBBBBB...
+.......BBBBBBBBT....
+........BBBBBBT.....
+.........BBBBT......
+..........TTT.......
+....................
+....................
+....................
+....................
+`)},
+  { id: 'sys-crane', name: 'Crane', kanji: '鶴', size: 20, solution: parseLevel(`
+....................
+....................
+.................SS.
+................SSSB
+...............SSS..
+..............SSS...
+.............SSS....
+............SSS.....
+...........SSS......
+..........SSSS......
+.........SSSSS......
+........SSSSSS......
+.......SSSSSSS......
+......SSSSSSSS......
+SSSSSSSSSSSSSS......
+SSSSSSSSSSSSS.......
+.SSSSSSSSSS.........
+..SSSSSSS...........
+....SSS.............
+.....S..............
+`)},
+  { id: 'sys-bamboo', name: 'Bamboo', kanji: '竹', size: 20, solution: parseLevel(`
+.....M........M.....
+.....M........M.....
+.....MMM......M.....
+.....M........MMM...
+.....M........M.....
+...SSM........M.....
+..SSSM........M.....
+.....M........MSS...
+.....M........MSSS..
+.....MMM......M.....
+.....M........MMM...
+.....M........M.....
+.....M..SS....M.....
+.....M.SSS....MSS...
+.....M........MSSS..
+.....MMM......M.....
+.....M........MMM...
+.....M..SS....M.....
+.....M.SSSS...M.....
+.....M........M.....
+`)},
+  { id: 'sys-torii', name: 'Torii Gate', kanji: '鳥', size: 20, solution: parseLevel(`
+....................
+....................
+....................
+..BBBBBBBBBBBBBBBB..
+.BBBBBBBBBBBBBBBBBB.
+....................
+...BBBBBBBBBBBBBB...
+....BBBBBBBBBBBB....
+...B............B...
+...BB..........BB...
+...BB..........BB...
+...BB..........BB...
+...BB..........BB...
+...BB..........BB...
+...BB..........BB...
+...BB..........BB...
+...BB..........BB...
+.BBBBBB......BBBBBB.
+.BBBBBB......BBBBBB.
+....................
+`)},
+
+  { id: 'sys-lotus', name: 'Lotus', kanji: '蓮', size: 20, solution: parseLevel(`
+....................
+....................
+....................
+.........T..........
+........TTT.........
+.......TTBTT........
+......TTBBBTT.......
+.....TTBBBBBTT......
+....TTBBBMBBBTT.....
+....TBBBBMBBBBT.....
+.....TBBBMBBBT......
+......TBBMBBT.......
+.......TBMBT........
+....SSSSBBBSSSSS....
+...SSSSSSSSSSSSSS...
+..SSSSSSSSSSSSSSSS..
+...SSSSSSSSSSSSSS...
+....................
+....................
+....................
+`)},
+  { id: 'sys-pagoda', name: 'Pagoda', kanji: '塔', size: 20, solution: parseLevel(`
+....................
+.........BB.........
+........BMMB........
+.......BMMMMB.......
+....BBBBBBBBBBBB....
+.......MMMMMM.......
+.......MMMMMM.......
+....BBBBBBBBBBBB....
+......MMMMMMMM......
+......MMMMMMMM......
+...BBBBBBBBBBBBBB...
+.....MMMMMMMMMM.....
+.....MMMMMMMMMM.....
+..BBBBBBBBBBBBBBBB..
+....MMMMMMMMMMMM....
+....MMMMMMMMMMMM....
+.BBBBBBBBBBBBBBBBBB.
+...MMMMMMMMMMMMMM...
+...MMMMMMMMMMMMMM...
+....................
+`)},
+  { id: 'sys-pinetree', name: 'Pine Tree', kanji: '松', size: 20, solution: parseLevel(`
+....................
+....................
+....EEEEEEEEEEEE....
+...EEMMMMMMMMMMEE...
+..EMMMMMMMMMMMMMME..
+.EMMMMMMMMMMMMMMMME.
+..EMMMMMMMMMMMMMME..
+....EEMMMMMMMMEE....
+.........BB.........
+.........BB.........
+.........BB.........
+...EE.EE.BB.EE.EE...
+..EMME.EMBBME.EMME..
+.EMMME.EMBBME.EMMME.
+..EMME.EMBBME.EMME..
+...EE...BBBB...EE...
+.........BB.........
+.........BB.........
+.........BB.........
+.....BBBBBBBBBB.....
+`)},
+];
+
+// ── compound (multi-tile) levels ───────────
+const COMPOUND_LEVELS = [
+  {
+    id: 'sys-compound-seasons',
+    name: 'Four Seasons',
+    kanji: '季',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'spring', name: 'Spring', kanji: '春', solution: parseLevel(`
+...............
+......TT.......
+.....TTTT......
+....TTTTTT.....
+...TTTTTTTT....
+....TTTTTT.....
+.....TTTT......
+......TT.......
+......BB.......
+......BB.......
+.....BBBB......
+....BB..BB.....
+...BB....BB....
+..BB......BB...
+.BB........BB..
+`) },
+      { id: 'summer', name: 'Summer', kanji: '夏', solution: parseLevel(`
+...............
+.....TTTTT.....
+....TTTTTTT....
+...TTTTTTTTT...
+....TTTTTTT....
+.....TTTTT.....
+...............
+....SSSS.......
+.SSSS....SSSS..
+...............
+.......SSSSS...
+..SSSSS........
+...............
+......SSSS.....
+...............
+`) },
+      { id: 'autumn', name: 'Autumn', kanji: '秋', solution: parseLevel(`
+.......B.......
+..B....B....B..
+..BB...B...BB..
+..BBB..B..BBB..
+..BBBBBBBBBBB..
+...BBBBBBBBB...
+.BBBBBBBBBBBBB.
+.BBBBBBBBBBBBB.
+..BBBBBBBBBBB..
+...BBBBBBBBB...
+....BBBBBBB....
+.....BB.BB.....
+......BBB......
+.......B.......
+.......B.......
+`) },
+      { id: 'winter', name: 'Winter', kanji: '冬', solution: parseLevel(`
+....SSSSSSS....
+..SSSSSSSSSSS..
+.SSSSSSSSSSSSS.
+.SSSSSSSSSSSSS.
+..SSSSSSSSSSS..
+....SSSSSSS....
+...............
+...............
+.......B.......
+.......B.......
+......BBB......
+.....BB.BB.....
+....B...B.B....
+...B...B...B...
+..B...........B
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-garden',
+    name: 'Tea Garden',
+    kanji: '園',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'sun', name: 'Morning Sun', kanji: '朝', solution: parseLevel(`
+...............
+......TT.......
+.....TTTT......
+....TTTTTT.....
+....TTTTTT.....
+.....TTTT......
+......TT.......
+...............
+...............
+......EE.......
+.....EEEE......
+....EEEEEE.....
+...EEEEEEEE....
+....EEEEEE.....
+...............
+`) },
+      { id: 'pavilion', name: 'Pavilion', kanji: '亭', solution: parseLevel(`
+...............
+......BBB......
+.....BBBBB.....
+....BBBBBBB....
+...BBBBBBBBB...
+..BBBBBBBBBBB..
+.BBBBBBBBBBBBB.
+...............
+......BBB......
+......BBB......
+......BBB......
+......BBB......
+......BBB......
+......BBB......
+.BBBBBBBBBBBBB.
+`) },
+      { id: 'pond', name: 'Lotus Pond', kanji: '池', solution: parseLevel(`
+...............
+......TT.......
+.....TTTT......
+.....TTTT......
+......TT.......
+...............
+....SSSSSSS....
+..SSSSSSSSSSS..
+.SSSSSSSSSSSSS.
+.SSSSSSSSSSSSS.
+..SSSSSSSSSSS..
+....SSSSSSS....
+...............
+...............
+...............
+`) },
+      { id: 'bamboo', name: 'Bamboo Grove', kanji: '竹', solution: parseLevel(`
+.M..M.....M....
+.M..M.....M....
+.MMMMM....MMM..
+.M..M.....M....
+.M..M.SS..M....
+.M..MSSS..M....
+.MMMMM....MMM..
+.M..M.....M....
+.M..M.SS..M....
+.M..MSSS..M....
+.MMMMM....MMM..
+.M..M.....M....
+.M..MSS...M....
+.M..MSSS..M....
+.M..M.....M....
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-visitors',
+    name: 'Garden Visitors',
+    kanji: '客',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'butterfly', name: 'Butterfly', kanji: '蝶', solution: parseLevel(`
+.......E.......
+......E.E......
+.......M.......
+.......M.......
+...TT..M..TT...
+..TBBT.M.TBBT..
+.TBBBBTMTBBBBT.
+.TBMBBTMTBBMBT.
+.TBBBBTMTBBBBT.
+..TBBBTMTBBBT..
+...TBBBMBBBT...
+....TTBMBTT....
+.....TTMTT.....
+......TMT......
+.......M.......
+`) },
+      { id: 'frog', name: 'Frog', kanji: '蛙', solution: parseLevel(`
+...............
+...MMMM.MMMM...
+..MMMMMMMMMMM..
+..MMTMM.MMTMM..
+..MMTMM.MMTMM..
+..MMMMMMMMMMM..
+.MMMMMMMMMMMMM.
+MMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMM
+.MMMMMMMMMMMMM.
+.MM.MMMMMMM.MM.
+.M.MM.MMM.MM.M.
+.MMMMM.M.MMMMM.
+...MMM...MMM...
+`) },
+      { id: 'dragonfly', name: 'Dragonfly', kanji: '蜻', solution: parseLevel(`
+...............
+.......E.......
+.......E.......
+.......E.......
+....SS.E.SS....
+...SSSSESSSS...
+..SSSSSESSSSS..
+.SSSSSSESSSSSS.
+..SSSSSESSSSS..
+...SSSSESSSS...
+....SS.E.SS....
+.......E.......
+.......E.......
+.......E.......
+.......E.......
+`) },
+      { id: 'goldfish', name: 'Goldfish', kanji: '鯉', solution: parseLevel(`
+...............
+......TTTT.....
+....TBBBBBT....
+...TBBMBBBBT...
+..TBBBBBBBBBT..
+..TBBBBBBBBBT.T
+..TBBBBBBBBBTTT
+..TBBBBBBBBBT.T
+..TBBBBBBBBBT..
+...TBBBBBBBT...
+....TBBBBBT....
+.....TBBBT.....
+......TBT......
+......TBT......
+.......T.......
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-weather',
+    name: 'Weather',
+    kanji: '気',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'sun', name: 'Sun', kanji: '日', solution: parseLevel(`
+...............
+.......T.......
+.T.....T.....T.
+..T....T....T..
+...T.TTTTT.T...
+.....TTTTT.....
+....TTTTTTT....
+.TTTTTTTTTTTTT.
+....TTTTTTT....
+.....TTTTT.....
+...T.TTTTT.T...
+..T....T....T..
+.T.....T.....T.
+.......T.......
+...............
+`) },
+      { id: 'rain', name: 'Rain', kanji: '雨', solution: parseLevel(`
+...............
+.....SSSSS.....
+....SSSSSSS....
+...SSSSSSSSS...
+....SSSSSSS....
+.....SSSSS.....
+...............
+.E.E.E.E.E.E.E.
+.E.E.E.E.E.E.E.
+..E.E.E.E.E.E..
+..E.E.E.E.E.E..
+...E.E.E.E.E...
+...E.E.E.E.E...
+.....E.E.E.....
+...............
+`) },
+      { id: 'snow', name: 'Snow', kanji: '雪', solution: parseLevel(`
+.......S.......
+.......S.......
+..S....S....S..
+...S...S...S...
+....S..S..S....
+.....S.S.S.....
+......SSS......
+SSSSSSS.SSSSSSS
+......SSS......
+.....S.S.S.....
+....S..S..S....
+...S...S...S...
+..S....S....S..
+.......S.......
+.......S.......
+`) },
+      { id: 'wind', name: 'Wind', kanji: '風', solution: parseLevel(`
+...............
+...............
+..SSSSSSSSSSS..
+.............SS
+............S..
+...............
+..SSSSSSSSSSSS.
+.S.............
+S..............
+...............
+...SSSSSSSSSS..
+.SS............
+...............
+...SSSSSSSSS...
+...............
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-birds',
+    name: 'Birds',
+    kanji: '翔',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'sparrow', name: 'Sparrow', kanji: '雀', solution: parseLevel(`
+...............
+...............
+......BBB......
+.....BBBBB.....
+....BBBBBBB....
+....BMBBBBB....
+....BBBBBBB....
+....BBBBBBBB...
+....BBBBBBBBB..
+...BBBBBBBB....
+....BBBBBB.....
+.....BBBB......
+......B.B......
+.....B...B.....
+...............
+`) },
+      { id: 'owl', name: 'Owl', kanji: '梟', solution: parseLevel(`
+....EEEEEEE....
+..EEEEEEEEEEE..
+.EEEEEEEEEEEEE.
+.EEEEEEEEEEEEE.
+..EETTEEETTEE..
+..EETTEEETTEE..
+.EEEEEEEEEEEEE.
+.EEEEEEEEEEEEE.
+.EEEEEEEEEEEEE.
+.EEEEEEEEEEEEE.
+.EEEEEEEEEEEEE.
+.EEEEEEEEEEEEE.
+..EEEEEEEEEEE..
+...E.......E...
+...E.......E...
+`) },
+      { id: 'hawk', name: 'Hawk', kanji: '鷹', solution: parseLevel(`
+...............
+B.............B
+BB...........BB
+BBB.........BBB
+BBBB.......BBBB
+.BBBBB...BBBBB.
+.BBBBBBBBBBBBB.
+..BBBBBBBBBBB..
+...BBBBBBBBB...
+......BBB......
+......BBB......
+......B.B......
+......B.B......
+.....B...B.....
+...............
+`) },
+      { id: 'swan', name: 'Swan', kanji: '鵠', solution: parseLevel(`
+......SSS......
+......SSSS.....
+......S.SSS....
+......S..SS....
+......S..SS....
+......S.SS.....
+......SSS......
+.....SSS.......
+....SSSSS......
+...SSSSSSSS....
+..SSSSSSSSSSS..
+.SSSSSSSSSSSSS.
+.SSSSSSSSSSSSS.
+..SSSSSSSSSSS..
+...............
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-gentlemen',
+    name: 'Four Gentlemen',
+    kanji: '君',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'plum', name: 'Plum', kanji: '梅', solution: parseLevel(`
+...............
+....TT.....TT..
+...TTTT...TTTT.
+...TTTT...TTTT.
+....TT.....TT..
+.......BBB.....
+.....BBB.......
+...BBB..TT.....
+..BB...TTTT....
+.BB....TTTT....
+BB......TT.....
+.........BBB...
+...........BBB.
+.............BB
+...............
+`) },
+      { id: 'orchid', name: 'Orchid', kanji: '蘭', solution: parseLevel(`
+...............
+.S.............
+.SS............
+..SS...........
+...SS..........
+....SS....S....
+.....SS..SS....
+......SSSS.....
+......SSS......
+......TTT......
+.....TBBBT.....
+....TBBBBBT....
+.....TBBBT.....
+......TT.......
+...............
+`) },
+      { id: 'chrys', name: 'Chrysanthemum', kanji: '菊', solution: parseLevel(`
+...............
+......TTT......
+....TTTTTTT....
+...TTBBBBBTT...
+..TTBBBBBBBTT..
+..TBBBMMMBBBT..
+..TBBMMMMMBBT..
+..TBBBMMMBBBT..
+..TTBBBBBBBTT..
+...TTBBBBBTT...
+....TTTBTTT....
+.......B.......
+.......B.......
+......BBB......
+.....BBBBB.....
+`) },
+      { id: 'bamboo', name: 'Bamboo', kanji: '竹', solution: parseLevel(`
+.......M.......
+.......M.......
+.......MM......
+.......M.......
+.......M.......
+.....SS.M......
+....SSS.M......
+.......MM......
+.......M.SSS...
+.......M..SS...
+.......M.......
+.......MM......
+....SS.M.......
+...SSS.M.......
+.......M.......
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-tea',
+    name: 'Tea Ceremony',
+    kanji: '茶',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'bowl', name: 'Tea Bowl', kanji: '碗', solution: parseLevel(`
+...............
+...............
+...............
+...............
+....TTTTTTT....
+.B.TTBBBBBTT.B.
+.BBTBBBBBBBTBB.
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+...BBBBBBBBB...
+....BBBBBBB....
+.....BBBBB.....
+......BBB......
+...............
+`) },
+      { id: 'whisk', name: 'Whisk', kanji: '筅', solution: parseLevel(`
+.....SSSS......
+.....SSSS......
+.....SSSS......
+....SS.SS......
+....SS.SS......
+....SS.SS......
+....SS.SS......
+....SS.SS......
+.....SSSS......
+.....BBBB......
+.....BBBB......
+.....BBBB......
+.....BBBB......
+.....BBBB......
+.....BBBB......
+`) },
+      { id: 'kettle', name: 'Iron Kettle', kanji: '釜', solution: parseLevel(`
+......MM.......
+.....MMMM......
+...MMMMMMMM....
+..MMMMMMMMMM...
+.MMMMMMMMMMMM..
+MMMMMMMMMMMMMM.
+MMMMMMMMMMMMMM.
+MMMMMMMMMMMMMM.
+MMMMMMMMMMMMMM.
+.MMMMMMMMMMMM..
+..MMMMMMMMMM...
+...MMMMMMMM....
+....MMMMMM.....
+....M....M.....
+....M....M.....
+`) },
+      { id: 'wagashi', name: 'Wagashi', kanji: '菓', solution: parseLevel(`
+...............
+...............
+.....TTTT......
+....TTBBTT.....
+...TTBBBBTT....
+....TTBBTT.....
+.....TTTT......
+....MMMMMMM....
+...MMMMMMMMM...
+...MMMMMMMMM...
+....MMMMMMM....
+...............
+...............
+...............
+...............
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-festival',
+    name: 'Festival Night',
+    kanji: '祭',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'lantern', name: 'Lantern', kanji: '灯', solution: parseLevel(`
+......BB.......
+.....BBBB......
+....BBBBBB.....
+...BBBBBBBB....
+..BBTTTTTTBB...
+..BTTTTTTTTB...
+..BTBBBBBBTB...
+..BTBBBBBBTB...
+..BTTTTTTTTB...
+..BBTTTTTTBB...
+...BBBBBBBB....
+....BBBBBB.....
+.....BBBB......
+.......B.......
+.......B.......
+`) },
+      { id: 'fireworks', name: 'Fireworks', kanji: '火', solution: parseLevel(`
+.......T.......
+....T..T..T....
+.....T.T.T.....
+......TTT......
+.T....TTT....T.
+..T..TTTTT..T..
+...T.TTTTT.T...
+TTTTTTTTTTTTTTT
+...T.TTTTT.T...
+..T..TTTTT..T..
+.T....TTT....T.
+......TTT......
+.....T.T.T.....
+....T..T..T....
+.......T.......
+`) },
+      { id: 'mask', name: 'Mask', kanji: '面', solution: parseLevel(`
+...............
+....T.....T....
+....TT...TT....
+....TTT.TTT....
+....TTTTTTT....
+...TTTTTTTTT...
+..TBBT.T.TBBT..
+..TBB.T.T.BBT..
+..TTTTTTTTTTT..
+...TTTTTTTTT...
+....TTTBTTT....
+....TTBBBTT....
+.....TTBTT.....
+......TTT......
+.......T.......
+`) },
+      { id: 'drum', name: 'Drum', kanji: '鼓', solution: parseLevel(`
+...............
+....BBBBBBB....
+...BBBBBBBBB...
+..BBBBBBBBBBB..
+.BBBBBBBBBBBBB.
+.BBBBBBBBBBBBB.
+.BMMBBBBBMMMBB.
+.BMMBBBBBMMMBB.
+.BMMBBBBBMMMBB.
+.BBBBBBBBBBBBB.
+.BBBBBBBBBBBBB.
+..BBBBBBBBBBB..
+...BBBBBBBBB...
+....BBBBBBB....
+...............
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-sea',
+    name: 'Sea Treasures',
+    kanji: '海',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'octopus', name: 'Octopus', kanji: '蛸', solution: parseLevel(`
+....BBBBBBB....
+...BBBBBBBBB...
+..BBBBBBBBBBB..
+..BBTBBBBBTBB..
+..BBBBBBBBBBB..
+..BBBBMMBBBBB..
+..BBBBMMBBBBB..
+..BBBBBBBBBBB..
+...BBBBBBBBB...
+.B.B.B.B.B.B.B.
+B.B.B.B.B.B.B.B
+B.B.B.B.B.B.B.B
+.B.B.B.B.B.B.B.
+....B...B......
+...............
+`) },
+      { id: 'crab', name: 'Crab', kanji: '蟹', solution: parseLevel(`
+...............
+..TT.......TT..
+.TTTT.....TTTT.
+..TT.T...T.TT..
+....T.T.T.T....
+.....TTBBBTT...
+....TBBBBBBBT..
+...TBBTBBTBBBT.
+....TBBBBBBBT..
+.....TBBBBBT...
+......TT.TT....
+.....T.....T...
+....T.......T..
+....T.......T..
+....T.......T..
+`) },
+      { id: 'shell', name: 'Shell', kanji: '貝', solution: parseLevel(`
+.......T.......
+......TTT......
+.....TTTTT.....
+....TT.T.TT....
+....T.T.T.T....
+...TT.T.T.TT...
+...T.T.T.T.T...
+..TT.T.T.T.TT..
+..T.T.T.T.T.T..
+.TT.T.T.T.T.TT.
+.T.T.T.T.T.T.T.
+TTTTTTTTTTTTTTT
+.TTTTTTTTTTTTT.
+..TTTTTTTTTTT..
+...............
+`) },
+      { id: 'starfish', name: 'Starfish', kanji: '星', solution: parseLevel(`
+......B........
+......BB.......
+......BBB......
+.....BBBBB.....
+.B...BBBBB...B.
+.BB..BBBBB..BB.
+.BBB.BBBBB.BBB.
+BBBBBBMMMBBBBBB
+.BBBBBMMMBBBBB.
+..BBBBBMBBBBB..
+..BB..BBB..BB..
+.B....BBB....B.
+B.....BBB.....B
+......BBB......
+.......B.......
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-sushi',
+    name: 'Sushi Plate',
+    kanji: '寿',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'maki', name: 'Maki Roll', kanji: '巻', solution: parseLevel(`
+...............
+.....SSSSS.....
+...SSSSSSSSS...
+..SSSSSSSSSSS..
+..STTTTTTTTTS..
+..STTTTTTTTTS..
+..STTBBBBBTTS..
+..STTBBBBBTTS..
+..STTBBBBBTTS..
+..STTTTTTTTTS..
+..STTTTTTTTTS..
+..SSSSSSSSSSS..
+...SSSSSSSSS...
+.....SSSSS.....
+...............
+`) },
+      { id: 'nigiri', name: 'Nigiri', kanji: '握', solution: parseLevel(`
+...............
+...............
+....TTTTTTT....
+...TTTTTTTTT...
+..TTTTTTTTTTT..
+..TTTTTTTTTTT..
+.BBBBBBBBBBBBB.
+.BBBBBBBBBBBBB.
+.BBBBBBBBBBBBB.
+.BBBBBBBBBBBBB.
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+...BBBBBBBBB...
+....BBBBBBB....
+...............
+`) },
+      { id: 'tamago', name: 'Tamago', kanji: '卵', solution: parseLevel(`
+...............
+....TTTTTTT....
+...TTTTTTTTT...
+...TTTTTTTTT...
+...TTTTTTTTT...
+...TTTTTTTTT...
+...SSSSSSSSS...
+...BBBBBBBBB...
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+...BBBBBBBBB...
+....BBBBBBB....
+...............
+`) },
+      { id: 'wasabi', name: 'Wasabi & Ginger', kanji: '葵', solution: parseLevel(`
+...............
+......MMM......
+.....MMMMM.....
+....MMMMMMM....
+....MMMMMMM....
+.....MMMMM.....
+......MMM......
+...............
+....TTTTTTT....
+...TTTTTTTTT...
+...TTTTTTTTT...
+...TTTTTTTTT...
+....TTTTTTT....
+...............
+...............
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-yokai',
+    name: 'Yokai',
+    kanji: '妖',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'tengu', name: 'Tengu', kanji: '天', solution: parseLevel(`
+...............
+......BBB......
+.....BBBBB.....
+....BBBBBBB....
+....BTBBBTB....
+....BBBBBBB....
+....BBBBBBB....
+....BBBBBBB....
+....BBBBBBB....
+....BBBBBBB....
+.....BBBBB.....
+.......B.......
+.......B.......
+.......B.......
+.......B.......
+`) },
+      { id: 'daruma', name: 'Daruma', kanji: '達', solution: parseLevel(`
+....BBBBBBB....
+...BBBBBBBBB...
+..BBBBBBBBBBB..
+..BBTTTTTTTBB..
+.BBTTTTTTTTTBB.
+.BBTBBTTTBBTBB.
+.BBTBBTTTBBTBB.
+.BBTTTTTTTTTBB.
+.BBBTTTTTTTBBB.
+.BBBBBBBBBBBBB.
+.BBBBBBBBBBBBB.
+.BBBBBBBBBBBBB.
+..BBBBBBBBBBB..
+...BBBBBBBBB...
+....BBBBBBB....
+`) },
+      { id: 'kitsune', name: 'Kitsune', kanji: '狐', solution: parseLevel(`
+...M.......M...
+...MM.....MM...
+...MMM...MMM...
+...MMMMMMMMM...
+..MMMMMMMMMMM..
+..MTMMMMMMMTM..
+..MTMMMMMMMTM..
+..MMMMMMMMMMM..
+...MMMMMMMMM...
+....MMMMMMM....
+.....MMMMM.....
+......MTM......
+......MMM......
+.......M.......
+...............
+`) },
+      { id: 'oni', name: 'Oni', kanji: '鬼', solution: parseLevel(`
+....B.....B....
+....BB...BB....
+....BBBBBBB....
+...BBBBBBBBB...
+..BBTTTBTTTBB..
+..BTTTTBTTTTB..
+..BBTTTBTTTBB..
+..BBBBBMMMBBB..
+..BBBMMMMMBBB..
+..BBBM.B.MBBB..
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+...BBBBBBBBB...
+....BBBBBBB....
+...............
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-architecture',
+    name: 'Old Japan',
+    kanji: '建',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'castle', name: 'Castle', kanji: '城', solution: parseLevel(`
+.......M.......
+......MMM......
+....BBBBBBB....
+....MTMMMTM....
+....MMMMMMM....
+..BBBBBBBBBBB..
+..MTMMTMMTMMM..
+..MMMMMMMMMMM..
+.BBBBBBBBBBBBB.
+.MTMTMTMTMTMTM.
+.MMMMMMMMMMMMM.
+BBBBBBBBBBBBBBB
+MMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMM
+`) },
+      { id: 'temple', name: 'Temple', kanji: '寺', solution: parseLevel(`
+.......M.......
+......MMM......
+.....MMMMM.....
+....MMMMMMM....
+.BBBBBBBBBBBBB.
+BBBBBBBBBBBBBBB
+....MMMMMMM....
+....MMMMMMM....
+....MTMMMTM....
+....MTMMMTM....
+....MMMMMMM....
+.BBBBBBBBBBBBB.
+BBBBBBBBBBBBBBB
+....MMMMMMM....
+....MMMMMMM....
+`) },
+      { id: 'bridge', name: 'Bridge', kanji: '橋', solution: parseLevel(`
+...............
+.....BBBBB.....
+....BBBBBBB....
+...BBBBBBBBB...
+..BBB.....BBB..
+..BB.......BB..
+..BB.......BB..
+..BB.......BB..
+..BB.......BB..
+..BB.......BB..
+..BB.......BB..
+SSSSSSSSSSSSSSS
+SS.SSSSSSSSS.SS
+SSSSSSSSSSSSSSS
+SSSSSSSSSSSSSSS
+`) },
+      { id: 'pagoda', name: 'Pagoda', kanji: '塔', solution: parseLevel(`
+.......B.......
+......BBB......
+....BBBBBBB....
+.....MMMMM.....
+.....MMMMM.....
+....BBBBBBB....
+....MMMMMMM....
+....MMMMMMM....
+...BBBBBBBBB...
+....MMMMMMM....
+....MMMMMMM....
+..BBBBBBBBBBB..
+....MMMMMMM....
+....MMMMMMM....
+..BBBBBBBBBBB..
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-calligraphy',
+    name: 'Calligraphy',
+    kanji: '書',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'brush', name: 'Brush', kanji: '筆', solution: parseLevel(`
+.....BBBBB.....
+.....BBBBB.....
+.....BBBBB.....
+.....BBBBB.....
+.....BBBBB.....
+....MBBBBBM....
+....MMMMMMM....
+....TTTTTTT....
+....TTTTTTT....
+.....TTTTT.....
+.....TTTTT.....
+......TTT......
+......TTT......
+.......T.......
+.......T.......
+`) },
+      { id: 'inkstone', name: 'Inkstone', kanji: '硯', solution: parseLevel(`
+...............
+...............
+EEEEEEEEEEEEEEE
+EEEEEEEEEEEEEEE
+EEMMMMMMMMMMMEE
+EEMMMMMMMMMMMEE
+EEMMMBBBBBMMMEE
+EEMMBBBBBBBMMEE
+EEMMMBBBBBMMMEE
+EEMMMMMMMMMMMEE
+EEMMMMMMMMMMMEE
+EEEEEEEEEEEEEEE
+EEEEEEEEEEEEEEE
+...............
+...............
+`) },
+      { id: 'scroll', name: 'Scroll', kanji: '紙', solution: parseLevel(`
+...............
+BBBBBBBBBBBBBBB
+B.............B
+B.TTTTTTTTTTT.B
+B.............B
+B...TTTTT.....B
+B.............B
+B.TTTTTTTTT...B
+B.............B
+B....TTTTT....B
+B.............B
+B.TTTTTTTTTTT.B
+B.............B
+BBBBBBBBBBBBBBB
+...............
+`) },
+      { id: 'seal', name: 'Seal', kanji: '印', solution: parseLevel(`
+...............
+...BBBBBBBBB...
+..BBBBBBBBBBB..
+..BTTTTTTTTTB..
+..BTBBBBBBBTB..
+..BTBBTTTBBTB..
+..BTBTTBTTBTB..
+..BTBBTTTBBTB..
+..BTBBBBBBBTB..
+..BTTTTTTTTTB..
+..BBBBBBBBBBB..
+...BBBBBBBBB...
+.....BBBBB.....
+...............
+...............
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-beasts',
+    name: 'Four Sacred Beasts',
+    kanji: '神',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'dragon', name: 'Dragon', kanji: '龍', solution: parseLevel(`
+...............
+............EE.
+...........EEEE
+..........EEEEE
+.........EEEEEE
+........EEEEEEE
+.......EEEEEEE.
+......EEEEE....
+.....EEE.......
+....EEE........
+...EEE.........
+..EE...........
+.EE............
+EE.............
+E..............
+`) },
+      { id: 'tiger', name: 'Tiger', kanji: '虎', solution: parseLevel(`
+....BBB....BBB.
+...BBBBB..BBBBB
+...BBBBBBBBBBBB
+...BTBBBBBBBTBB
+...BBBBBBBBBBBB
+....BBMMMMMBB..
+....BBBBBBBBB..
+.BBBBBBBBBBBBB.
+BBBBBBBBBBBBBBB
+BBBBBBBBBBBBBBB
+BBBBBBBBBBBBBBB
+BBBBBBBBBBBBBBB
+.BB.BB.BB.BB.B.
+.B.BB.BB.BB.BB.
+....BB...BB....
+`) },
+      { id: 'phoenix', name: 'Phoenix', kanji: '鳳', solution: parseLevel(`
+......TT.......
+.....TBBT......
+.....TBBT......
+......BB.......
+....TTBBTT.....
+...TTTBBTTT....
+..TBBBBBBBBT...
+.TBBBBBBBBBBT..
+.TBBBBBBBBBBBT.
+..TBBBBBBBBT...
+....TBBBBT.....
+.....BBBB......
+....TTBBTT.....
+...TT.BB.TT....
+..TT...BB..TT..
+`) },
+      { id: 'tortoise', name: 'Tortoise', kanji: '亀', solution: parseLevel(`
+...............
+......TTT......
+.....TT.TT.....
+......TTT......
+....EEEEEEE....
+...EEEEEEEEE...
+..EEBBBBBBBEE..
+..EBBBEBEBBBE..
+..EBEBBBBBEBE..
+..EBBBEBEBBBE..
+...EEEEEEEEE...
+....EEEEEEE....
+..B..B...B..B..
+..B..B...B..B..
+...............
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-origami',
+    name: 'Origami',
+    kanji: '折',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'crane', name: 'Paper Crane', kanji: '鶴', solution: parseLevel(`
+.......T.......
+......TTT......
+.....TTTTT.....
+.....TTTTT.....
+..T.TTTTTT.T...
+..TTTTTTTTTT...
+.TTTTTTTTTTTT..
+TTTTTTTTTTTTTT.
+.TTTTTTTTTTTT..
+...TTTTTTTT....
+....TT...TT....
+....T.....T....
+....T.....T....
+...............
+...............
+`) },
+      { id: 'boat', name: 'Paper Boat', kanji: '舟', solution: parseLevel(`
+...............
+......T........
+......TT.......
+......TTT......
+......TTTT.....
+......TTTTT....
+......TTTTTT...
+......TTTTTTT..
+......TTTTTTTT.
+...TTTTTTTTTTTT
+.TTTTTTTTTTTTT.
+TTTTTTTTTTTTTTT
+.TTTTTTTTTTTTT.
+..TTTTTTTTTTT..
+...............
+`) },
+      { id: 'lily', name: 'Paper Lily', kanji: '百', solution: parseLevel(`
+.......T.......
+......TTT......
+.....TTTTT.....
+....TT.T.TT....
+...TT..T..TT...
+..TT...T...TT..
+.TT....T....TT.
+TT.....T.....TT
+T......T......T
+.T....TTT....T.
+.TT..TTTTT..TT.
+..TTTTTTTTTTT..
+...TTTTTTTTT...
+.....TTTTT.....
+.......T.......
+`) },
+      { id: 'heart', name: 'Paper Heart', kanji: '心', solution: parseLevel(`
+...............
+...TTT...TTT...
+..TTTTT.TTTTT..
+.TTTTTTTTTTTTT.
+.TTTTTTTTTTTTT.
+.TTTTTTTTTTTTT.
+.TTTTTTTTTTTTT.
+.TTTTTTTTTTTTT.
+..TTTTTTTTTTT..
+...TTTTTTTTT...
+....TTTTTTT....
+.....TTTTT.....
+......TTT......
+.......T.......
+...............
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-fruits',
+    name: 'Autumn Fruits',
+    kanji: '果',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'persimmon', name: 'Persimmon', kanji: '柿', solution: parseLevel(`
+......MM.......
+.....MMMMM.....
+....M.M.M.M....
+...............
+....BBBBBBB....
+...BBBBBBBBB...
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+...BBBBBBBBB...
+....BBBBBBB....
+.....BBBBB.....
+.......B.......
+`) },
+      { id: 'peach', name: 'Peach', kanji: '桃', solution: parseLevel(`
+......MM.......
+.....MMMM......
+.......M.......
+....TTTTTTT....
+...TTTTTTTTT...
+..TTTTTTTTTTT..
+..TTTTTTTTTTT..
+.TTTTTT.TTTTTT.
+.TTTTTT.TTTTTT.
+.TTTTTT.TTTTTT.
+..TTTTTTTTTTT..
+..TTTTTTTTTTT..
+...TTTTTTTTT...
+....TTTTTTT....
+.....TTTTT.....
+`) },
+      { id: 'pear', name: 'Pear', kanji: '梨', solution: parseLevel(`
+......MM.......
+......M........
+......T........
+.....TTT.......
+.....TTT.......
+.....TTTTT.....
+.....TTTTT.....
+....TTTTTTT....
+....TTTTTTT....
+...TTTTTTTTT...
+..TTTTTTTTTTT..
+..TTTTTTTTTTT..
+...TTTTTTTTT...
+....TTTTTTT....
+......TTT......
+`) },
+      { id: 'grape', name: 'Grape', kanji: '葡', solution: parseLevel(`
+....MMMM.......
+....M..........
+....MM.........
+......TT.TT....
+.....TTTTTTT...
+....TT.TT.TT...
+....TTTTTTT....
+....TT.TT.TT...
+.....TTTTTTT...
+.....TT.TT.....
+......TTTT.....
+.......TT......
+.......T.......
+...............
+...............
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-hanami',
+    name: 'Hanami Picnic',
+    kanji: '宴',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'sake', name: 'Sake Flask', kanji: '酒', solution: parseLevel(`
+......BBB......
+.....BBBBB.....
+.....B.B.B.....
+.....BBBBB.....
+......BBB......
+.....BBBBB.....
+....BBBBBBB....
+...BBBBBBBBB...
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+...BBBBBBBBB...
+...............
+`) },
+      { id: 'dango', name: 'Dango', kanji: '団', solution: parseLevel(`
+.......M.......
+.......M.......
+....TTTTTTT....
+...TTTTTTTTT...
+...TTTTTTTTT...
+....TTTTTTT....
+.......M.......
+....BBBBBBB....
+...BBBBBBBBB...
+....BBBBBBB....
+.......M.......
+....MMMMMMM....
+...MMMMMMMMM...
+....MMMMMMM....
+.......M.......
+`) },
+      { id: 'teapot', name: 'Teapot', kanji: '急', solution: parseLevel(`
+...............
+......MMM......
+.....MMMMM.....
+....MMMMMMM....
+...MMMMMMMMM...
+MMMMMMMMMMMMM..
+M.MMMMMMMMMMM.M
+MMMMMMMMMMMMMMM
+MMMMMMMMMMMMMM.
+.MMMMMMMMMMMM..
+..MMMMMMMMMM...
+...MMMMMMMM....
+....MMMMMM.....
+...............
+...............
+`) },
+      { id: 'bento', name: 'Bento', kanji: '弁', solution: parseLevel(`
+...............
+BBBBBBBBBBBBBBB
+BTTTTTTBMMMMMMB
+BTTTTTTBMMMMMMB
+BTTTTTTBMMMMMMB
+BTTTTTTBMMMMMMB
+BBBBBBBBBBBBBBB
+BSSSSSSBEEEEEEB
+BSSSSSSBEEEEEEB
+BSSSSSSBEEEEEEB
+BSSSSSSBEEEEEEB
+BBBBBBBBBBBBBBB
+...............
+...............
+...............
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-sky',
+    name: 'Sky Phenomena',
+    kanji: '空',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'rainbow', name: 'Rainbow', kanji: '虹', solution: parseLevel(`
+...............
+...............
+....MMMMMMM....
+..MMM.....MMM..
+.MM.........MM.
+MM..SSSSSSS..MM
+M.SS.......SSM.
+.SS..TTTTT..SS.
+SS..TT...TT..SS
+S..TT.....TT..S
+..TT.......TT..
+.T...........T.
+T.............T
+...............
+...............
+`) },
+      { id: 'lightning', name: 'Lightning', kanji: '雷', solution: parseLevel(`
+...............
+.........TTT...
+........TTTT...
+.......TTTT....
+......TTTT.....
+.....TTTT......
+....TTTTTTT....
+...TTTTTTT.....
+......TTT......
+.....TTTT......
+....TTTTT......
+...TTTT........
+..TTT..........
+.TTT...........
+...............
+`) },
+      { id: 'comet', name: 'Comet', kanji: '彗', solution: parseLevel(`
+...............
+TT.............
+TTTT...........
+.TTTTT.........
+..TTTTT........
+...TTTTT.......
+....TTTTT......
+.....TTTTTT....
+.......TTTTT...
+.........BBBT..
+..........BBBB.
+...........BBBB
+.............BB
+...............
+...............
+`) },
+      { id: 'aurora', name: 'Aurora', kanji: '極', solution: parseLevel(`
+...............
+.E.E.E.E.E.E.E.
+EE.EE.EE.EE.EE.
+.EEE.EEE.EEE.EE
+EEEEEEEEEEEEEEE
+.SSSSSSSSSSSSS.
+SSSSSSSSSSSSSSS
+.SSSSSSSSSSSSS.
+...............
+..MMMMMMMMMMM..
+.MMMMMMMMMMMMM.
+MMMMMMMMMMMMMMM
+.MMMMMMMMMMMMM.
+...............
+...............
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-winter',
+    name: 'Winter Warmth',
+    kanji: '暖',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'snowman', name: 'Snowman', kanji: '雪', solution: parseLevel(`
+...............
+.....SSSSS.....
+....SSSSSSS....
+....SSBBBSS....
+....SBSBSBS....
+....SSSBSSS....
+....SSSSSSS....
+.....SSSSS.....
+....SSSSSSS....
+...SSSSSSSSS...
+..SSSSSSSSSSS..
+..SSSSSSSSSSS..
+...SSSSSSSSS...
+....SSSSSSS....
+...............
+`) },
+      { id: 'hotpot', name: 'Hot Pot', kanji: '鍋', solution: parseLevel(`
+...............
+......SS.......
+......SS.......
+......SS.......
+.....S.S.S.....
+....S.S.S.S....
+...............
+MM.MMMMMMMMM.MM
+.MMTTTTTTTTTMM.
+.MMMMMMMMMMMMM.
+.MMMMMMMMMMMMM.
+.MMMMMMMMMMMMM.
+.MMMMMMMMMMMMM.
+..MMMMMMMMMMM..
+...............
+`) },
+      { id: 'kotatsu', name: 'Kotatsu', kanji: '炬', solution: parseLevel(`
+...............
+BBBBBBBBBBBBBBB
+BTTTBTTTTBTTBTB
+BBBBBBBBBBBBBBB
+.M...........M.
+.M...........M.
+.M...........M.
+.M...........M.
+.M...........M.
+.M...........M.
+.M...........M.
+.M...........M.
+.M...........M.
+.M...........M.
+.MMMMMMMMMMMMM.
+`) },
+      { id: 'cup', name: 'Warm Cup', kanji: '杯', solution: parseLevel(`
+...............
+.......S.......
+......SSS......
+.......S.......
+......S.S......
+...............
+.MMMMMMMMMM.M..
+.MTTTTTTTTM.MM.
+.MMMMMMMMMM.MM.
+.MTTTTTTTTM.M..
+.MTTTTTTTTM....
+.MMMMMMMMMM....
+..MMMMMMMM.....
+...MMMMMM......
+...............
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-tools',
+    name: 'Garden Tools',
+    kanji: '具',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'hoe', name: 'Hoe', kanji: '鍬', solution: parseLevel(`
+.....BBBBB.....
+....BBBBBBB....
+...BBBBBBBBB...
+.BBBBBBBBBBBBB.
+BBBBBBBBBBBBBBB
+.M.............
+..M............
+...M...........
+....M..........
+.....M.........
+......M........
+.......M.......
+........M......
+.........M.....
+..........M....
+`) },
+      { id: 'waterpot', name: 'Watering Pot', kanji: '水', solution: parseLevel(`
+...............
+...............
+....MMMMMMM....
+...MMMMMMMMM...
+..MMMMMMMMMMMMM
+..MMMMMMMMMMM..
+.MMMMMMMMMMMMM.
+.MMMMMMMMMMMMM.
+.MMMMMMMMMMMMM.
+.MMMMMMMMMMMMM.
+..MMMMMMMMMMM..
+...............
+....EEE........
+....E.E........
+....E.E........
+`) },
+      { id: 'basket', name: 'Basket', kanji: '籠', solution: parseLevel(`
+...............
+...............
+....M.....M....
+....MM...MM....
+....MMM.MMM....
+.SSSSSSSSSSSSS.
+.S.S.S.S.S.S.S.
+.SS.S.S.S.S.SS.
+.S.S.S.S.S.S.S.
+.SS.S.S.S.S.SS.
+.S.S.S.S.S.S.S.
+.SSSSSSSSSSSSS.
+..SSSSSSSSSSS..
+...............
+...............
+`) },
+      { id: 'shears', name: 'Shears', kanji: '鋏', solution: parseLevel(`
+...............
+.MM.........MM.
+..MM.......MM..
+...MM.....MM...
+....MM...MM....
+.....MM.MM.....
+......MMM......
+......BBB......
+......BBB......
+......BBB......
+......BBB......
+......BBB......
+.....BBBBB.....
+....BBBBBBB....
+...BBBBBBBBB...
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-samurai',
+    name: 'Samurai',
+    kanji: '武',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'katana', name: 'Katana', kanji: '刀', solution: parseLevel(`
+B..............
+BB.............
+BB.............
+.BBB...........
+....EEE........
+.....EEE.......
+......EEE......
+.......EEE.....
+........EEE....
+.........EEE...
+..........EEE..
+...........EEE.
+............EEE
+.............EE
+...............
+`) },
+      { id: 'bow', name: 'Bow', kanji: '弓', solution: parseLevel(`
+.......B.......
+......BBB......
+.....B...B.....
+.....B....B....
+.....B.....B...
+.....B.....B...
+.....B.....B...
+TTTTTTTTTTTTTB.
+.....B.....B...
+.....B.....B...
+.....B.....B...
+.....B....B....
+.....B...B.....
+......BBB......
+.......B.......
+`) },
+      { id: 'helmet', name: 'Helmet', kanji: '兜', solution: parseLevel(`
+...............
+.....BBBBB.....
+....BBBBBBB....
+...BBBBBBBBB...
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+.BBBBBBBBBBBBB.
+BBBBBBBBBBBBBBB
+BBBBBBBBBBBBBBB
+.B...........B.
+.B...........B.
+..B.........B..
+...............
+`) },
+      { id: 'shield', name: 'Shield', kanji: '盾', solution: parseLevel(`
+...............
+....BBBBBBB....
+...BBBBBBBBB...
+..BBBBBBBBBBB..
+.BBBBBBBBBBBBB.
+.BBMMMMMMMMMBB.
+.BBMMMMMMMMMBB.
+.BBMMMMMMMMMBB.
+.BBMMMMMMMMMBB.
+.BBMMMMMMMMMBB.
+.BBBBBBBBBBBBB.
+..BBBBBBBBBBB..
+...BBBBBBBBB...
+....BBBBBBB....
+...............
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-flowers',
+    name: 'Wildflowers',
+    kanji: '野',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'iris', name: 'Iris', kanji: '杜', solution: parseLevel(`
+.......T.......
+......TTT......
+.....TMMMT.....
+....TMMTMMT....
+....TMMTMMT....
+.....TMMMT.....
+......TMT......
+.......T.......
+.......S.......
+.......S.......
+.......S.......
+....S..S..S....
+....SSSSSSS....
+....SSSSSSS....
+...............
+`) },
+      { id: 'wisteria', name: 'Wisteria', kanji: '藤', solution: parseLevel(`
+EEEEEEEEEEEEEEE
+...............
+.......S.......
+......SSS......
+......SSS......
+.....SSSSS.....
+.....SSSSS.....
+......SSS......
+.....SSSSS.....
+....SSSSSSS....
+....SSSSSSS....
+.....SSSSS.....
+......SSS......
+.......S.......
+...............
+`) },
+      { id: 'camellia', name: 'Camellia', kanji: '椿', solution: parseLevel(`
+...............
+......TTT......
+....TTTBBTT....
+...TBBBBBBBT...
+..TBBMMMMMBBT..
+..TBMMMMMMMBT..
+.TBMMMMMMMMMBT.
+.TBMMMMMMMMMBT.
+.TBMMMMMMMMMBT.
+..TBMMMMMMMBT..
+..TBBMMMMMBBT..
+...TBBBBBBBT...
+....TTTBBTT....
+......TTT......
+...............
+`) },
+      { id: 'hydrangea', name: 'Hydrangea', kanji: '紫', solution: parseLevel(`
+...............
+.....TTTTT.....
+....TTBBBTT....
+...TTBTBTBTT...
+...TBBBTBBBT...
+...TTBTBTBTT...
+....TBBBBBT....
+...TTBTBTBTT...
+...TBBBTBBBT...
+...TTBTBTBTT...
+....TTBBBTT....
+.....TTTTT.....
+.......S.......
+.......S.......
+......SSS......
+`) },
+    ],
+  },
+  {
+    id: 'sys-compound-foods',
+    name: 'Festival Foods',
+    kanji: '屋',
+    type: 'compound',
+    subSize: 15,
+    subs: [
+      { id: 'takoyaki', name: 'Takoyaki', kanji: '焼', solution: parseLevel(`
+.....SSS.......
+......S........
+.....S.S.......
+......S........
+.....SSS.......
+....BBBBBBB....
+...BBBBBBBBB...
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+..BBBBBBBBBBB..
+...BBBBBBBBB...
+....BBBBBBB....
+....TTTTTTT....
+...TTTTTTTTT...
+...............
+`) },
+      { id: 'mochi', name: 'Mochi', kanji: '餅', solution: parseLevel(`
+...............
+...............
+....TTTTTTT....
+...TTTTTTTTT...
+..TTTTTTTTTTT..
+..TTTTTTTTTTT..
+..TTTTTTTTTTT..
+..TTTTTBTTTTT..
+..TTTTBBBTTTT..
+..TTTTTBTTTTT..
+..TTTTTTTTTTT..
+...TTTTTTTTT...
+....TTTTTTT....
+...............
+...............
+`) },
+      { id: 'yakitori', name: 'Yakitori', kanji: '串', solution: parseLevel(`
+.......M.......
+.......M.......
+....BBBMBBB....
+...BBBBMBBBB...
+...BBBBMBBBB...
+....BBBMBBB....
+.......M.......
+....TTTMTTT....
+...TTTTMTTTT...
+...TTTTMTTTT...
+....TTTMTTT....
+.......M.......
+....BBBMBBB....
+...BBBBMBBBB...
+.......M.......
+`) },
+      { id: 'wataame', name: 'Cotton Candy', kanji: '綿', solution: parseLevel(`
+...............
+....TTTTTTT....
+...TTTTTTTTT...
+..TTTT.TTTTTT..
+.TTT.....TTTTT.
+.TTT...TTTTTTT.
+.TTTTTTTTTTTT..
+..TTTTTTTTTTT..
+...TTTTTTTTT...
+....TTTTTTT....
+.......B.......
+.......B.......
+.......B.......
+.......B.......
+.......B.......
+`) },
+    ],
+  },
+];
+
+// ── storage ────────────────────────────────
+const STORAGE_KEY = 'nonogram:custom-levels-v2';
+const SOLVED_KEY = 'nonogram:solved';
+const SETTINGS_KEY = 'nonogram:settings';
+const USERS_KEY = 'nonogram:users';
+const hasStorage = typeof window !== 'undefined' && window.storage && typeof window.storage.get === 'function';
+const mem = { custom: [], solved: [], settings: {}, users: {} };
+
+let settings = { autoCross: true };
+
+async function loadCustomLevels() {
+  if (!hasStorage) return mem.custom;
+  try {
+    const res = await window.storage.get(STORAGE_KEY);
+    if (res && res.value) return JSON.parse(res.value);
+  } catch (e) {}
+  try {
+    const legacy = await window.storage.get('nonogram:custom-levels');
+    if (legacy && legacy.value) {
+      const lvls = JSON.parse(legacy.value);
+      return lvls.map(lvl => ({
+        ...lvl,
+        solution: lvl.solution.map(row => row.map(v => v === 1 ? COLOR.moss : 0)),
+      }));
+    }
+  } catch (e) {}
+  return [];
+}
+
+async function saveCustomLevels(levels) {
+  if (currentUser) { await saveUserCustomLevels(currentUser.username, levels); return; }
+  if (!hasStorage) { mem.custom = levels; return; }
+  try { await window.storage.set(STORAGE_KEY, JSON.stringify(levels)); }
+  catch (e) { console.error('save failed', e); }
+}
+
+async function loadSolved() {
+  if (!hasStorage) return mem.solved;
+  try {
+    const res = await window.storage.get(SOLVED_KEY);
+    if (res && res.value) return JSON.parse(res.value);
+  } catch (e) {}
+  return [];
+}
+
+async function markSolved(id) {
+  if (!state.solved.includes(id)) state.solved.push(id);
+  if (currentUser) {
+    await saveUserSolved(currentUser.username, state.solved);
+    return;
+  }
+  if (hasStorage) {
+    try { await window.storage.set(SOLVED_KEY, JSON.stringify(state.solved)); } catch (e) {}
+  } else { mem.solved = state.solved; }
+}
+
+async function loadSettings() {
+  if (!hasStorage) return;
+  try {
+    const res = await window.storage.get(SETTINGS_KEY);
+    if (res && res.value) Object.assign(settings, JSON.parse(res.value));
+  } catch (e) {}
+}
+
+async function saveSettings() {
+  if (!hasStorage) { mem.settings = {...settings}; return; }
+  try { await window.storage.set(SETTINGS_KEY, JSON.stringify(settings)); } catch (e) {}
+}
+
+// ── auth helpers ───────────────────────────
+// simple djb2-style hash (not cryptographic, but sufficient for local storage)
+function hashPassword(pass) {
+  let h = 5381;
+  for (let i = 0; i < pass.length; i++) h = (h * 33) ^ pass.charCodeAt(i);
+  return (h >>> 0).toString(16);
+}
+
+async function loadUsers() {
+  if (!hasStorage) return mem.users;
+  try {
+    const res = await window.storage.get(USERS_KEY);
+    if (res && res.value) return JSON.parse(res.value);
+  } catch (e) {}
+  return {};
+}
+
+async function saveUsers(users) {
+  if (!hasStorage) { mem.users = users; return; }
+  try { await window.storage.set(USERS_KEY, JSON.stringify(users)); } catch (e) {}
+}
+
+// Each user gets per-user keys for custom levels + solved
+function userStorageKey(username, kind) {
+  return `nonogram:u:${username}:${kind}`;
+}
+
+async function loadUserCustomLevels(username) {
+  if (!hasStorage) return mem.custom;
+  try {
+    const res = await window.storage.get(userStorageKey(username, 'custom-v2'));
+    if (res && res.value) return JSON.parse(res.value);
+  } catch (e) {}
+  return [];
+}
+
+async function saveUserCustomLevels(username, levels) {
+  if (!hasStorage) { mem.custom = levels; return; }
+  try { await window.storage.set(userStorageKey(username, 'custom-v2'), JSON.stringify(levels)); } catch (e) {}
+}
+
+async function loadUserSolved(username) {
+  if (!hasStorage) return mem.solved;
+  try {
+    const res = await window.storage.get(userStorageKey(username, 'solved'));
+    if (res && res.value) return JSON.parse(res.value);
+  } catch (e) {}
+  return [];
+}
+
+async function saveUserSolved(username, solved) {
+  if (!hasStorage) { mem.solved = solved; return; }
+  try { await window.storage.set(userStorageKey(username, 'solved'), JSON.stringify(solved)); } catch (e) {}
+}
+
+// In-memory session (current logged-in user)
+let currentUser = null; // { username: string }
+
+function isLoggedIn() { return !!currentUser; }
+
+async function authRegister(username, password) {
+  if (!username || !password) return { ok: false, err: 'Username and password are required.' };
+  if (username.length < 2) return { ok: false, err: 'Username must be at least 2 characters.' };
+  if (password.length < 4) return { ok: false, err: 'Password must be at least 4 characters.' };
+  if (!/^[a-zA-Z0-9_\-\.]+$/.test(username)) return { ok: false, err: 'Username may only contain letters, numbers, _ - .' };
+  const users = await loadUsers();
+  if (users[username.toLowerCase()]) return { ok: false, err: 'That username is already taken.' };
+  users[username.toLowerCase()] = { username, hash: hashPassword(password), createdAt: Date.now() };
+  await saveUsers(users);
+  return { ok: true, username };
+}
+
+async function authLogin(username, password) {
+  if (!username || !password) return { ok: false, err: 'Please enter your username and password.' };
+  const users = await loadUsers();
+  const rec = users[username.toLowerCase()];
+  if (!rec) return { ok: false, err: 'No account found with that username.' };
+  if (rec.hash !== hashPassword(password)) return { ok: false, err: 'Incorrect password.' };
+  return { ok: true, username: rec.username };
+}
+
+// ── puzzle math (color-aware) ──────────────
+function cellColor(v) {
+  if (!v || v === 'mark') return null;
+  if (v === 1 || v === true) return COLOR.moss;
+  return v;
+}
+
+function computeClues(solution) {
+  const n = solution.length;
+  const rowClues = [];
+  const colClues = [];
+
+  const runs = (getCell, len) => {
+    const clues = [];
+    let curColor = null;
+    let count = 0;
+    for (let i = 0; i < len; i++) {
+      const color = cellColor(getCell(i));
+      if (color === null) {
+        if (count > 0) clues.push({ count, color: curColor });
+        count = 0; curColor = null;
+      } else if (color === curColor) {
+        count++;
+      } else {
+        if (count > 0) clues.push({ count, color: curColor });
+        curColor = color; count = 1;
+      }
+    }
+    if (count > 0) clues.push({ count, color: curColor });
+    if (clues.length === 0) clues.push({ count: 0, color: COLOR.moss });
+    return clues;
+  };
+
+  for (let r = 0; r < n; r++) rowClues.push(runs(c => solution[r][c], n));
+  for (let c = 0; c < n; c++) colClues.push(runs(r => solution[r][c], n));
+  return { rowClues, colClues };
+}
+
+function isComplete(state, solution) {
+  const n = solution.length;
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      if (cellColor(solution[r][c]) !== cellColor(state[r][c])) return false;
+    }
+  }
+  return true;
+}
+
+function isRowDone(state, solution, r) {
+  const n = solution.length;
+  for (let c = 0; c < n; c++) {
+    if (cellColor(state[r][c]) !== cellColor(solution[r][c])) return false;
+  }
+  return true;
+}
+
+function isColumnDone(state, solution, c) {
+  const n = solution.length;
+  for (let r = 0; r < n; r++) {
+    if (cellColor(state[r][c]) !== cellColor(solution[r][c])) return false;
+  }
+  return true;
+}
+
+function makeEmpty(size) {
+  return Array.from({length: size}, () => new Array(size).fill(0));
+}
+
+function colorsInPuzzle(solution) {
+  const set = new Set();
+  for (const row of solution) {
+    for (const v of row) {
+      const c = cellColor(v);
+      if (c) set.add(c);
+    }
+  }
+  return [...set];
+}
+
+// ── preview SVG ────────────────────────────
+function previewSVG(solution) {
+  const n = solution.length;
+  const cell = n <= 10 ? 8 : 5;
+  const pad = 2;
+  const w = n * cell + pad * 2;
+  const target = Math.min(140, w * (n <= 10 ? 2 : 1.4));
+  let svg = `<svg viewBox="0 0 ${w} ${w}" width="${target}" xmlns="http://www.w3.org/2000/svg">`;
+  svg += `<rect width="${w}" height="${w}" fill="${COLOR.moss === '#668866' ? '#ccccaa' : '#ccccaa'}"/>`;
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      const color = cellColor(solution[r][c]);
+      if (color) svg += `<rect x="${pad + c*cell}" y="${pad + r*cell}" width="${cell}" height="${cell}" fill="${color}"/>`;
+    }
+  }
+  svg += `</svg>`;
+  return svg;
+}
+
+function compoundPreviewSVG(compound, solvedIds) {
+  const subSize = compound.subSize;
+  const cell = 3;
+  const sd = subSize * cell;
+  const seam = 3;
+  const pad = 2;
+  const w = pad * 2 + sd * 2 + seam;
+
+  let svg = `<svg viewBox="0 0 ${w} ${w}" width="140" xmlns="http://www.w3.org/2000/svg">`;
+  svg += `<rect width="${w}" height="${w}" fill="#b8b896"/>`;
+
+  for (let i = 0; i < 4; i++) {
+    const sub = compound.subs[i];
+    const subKey = compound.id + ':' + sub.id;
+    const isSolved = solvedIds.includes(subKey);
+    const x = pad + (i % 2) * (sd + seam);
+    const y = pad + Math.floor(i / 2) * (sd + seam);
+
+    if (isSolved) {
+      svg += `<rect x="${x}" y="${y}" width="${sd}" height="${sd}" fill="#ccccaa"/>`;
+      for (let r = 0; r < subSize; r++) {
+        for (let c = 0; c < subSize; c++) {
+          const color = cellColor(sub.solution[r][c]);
+          if (color) svg += `<rect x="${x + c*cell}" y="${y + r*cell}" width="${cell}" height="${cell}" fill="${color}"/>`;
+        }
+      }
+    } else {
+      svg += `<rect x="${x}" y="${y}" width="${sd}" height="${sd}" fill="#ccccaa" opacity="0.55"/>`;
+      svg += `<text x="${x + sd/2}" y="${y + sd/2 + sd*0.18}" font-family="serif" font-weight="700" font-size="${sd*0.55}" fill="#778877" text-anchor="middle" opacity="0.5">${sub.kanji}</text>`;
+    }
+  }
+  svg += `</svg>`;
+  return svg;
+}
+
+function subPreviewSVG(sub, isSolved) {
+  const n = sub.solution.length;
+  const cell = 6;
+  const pad = 2;
+  const w = n * cell + pad * 2;
+  let svg = `<svg viewBox="0 0 ${w} ${w}" width="100" xmlns="http://www.w3.org/2000/svg">`;
+  svg += `<rect width="${w}" height="${w}" fill="#ccccaa" ${isSolved ? '' : 'opacity="0.4"'}/>`;
+  if (isSolved) {
+    for (let r = 0; r < n; r++) {
+      for (let c = 0; c < n; c++) {
+        const color = cellColor(sub.solution[r][c]);
+        if (color) svg += `<rect x="${pad + c*cell}" y="${pad + r*cell}" width="${cell}" height="${cell}" fill="${color}"/>`;
+      }
+    }
+  } else {
+    svg += `<text x="${w/2}" y="${w/2 + w*0.16}" font-family="serif" font-weight="700" font-size="${w*0.45}" fill="#778877" text-anchor="middle" opacity="0.4">?</text>`;
+  }
+  svg += `</svg>`;
+  return svg;
+}
+
+// ── combined reveal canvas ─────────────────
+function combinedRevealSVG(compound) {
+  const subSize = compound.subSize;
+  const cell = 14;
+  const seam = 4;
+  const pad = 4;
+  const sd = subSize * cell;
+  const w = pad * 2 + sd * 2 + seam;
+
+  let svg = `<svg viewBox="0 0 ${w} ${w}" class="combined-art" width="${Math.min(500, w)}" xmlns="http://www.w3.org/2000/svg">`;
+  svg += `<rect width="${w}" height="${w}" fill="#b8b896"/>`;
+  for (let i = 0; i < 4; i++) {
+    const sub = compound.subs[i];
+    const x = pad + (i % 2) * (sd + seam);
+    const y = pad + Math.floor(i / 2) * (sd + seam);
+    svg += `<rect x="${x}" y="${y}" width="${sd}" height="${sd}" fill="#ccccaa"/>`;
+    for (let r = 0; r < subSize; r++) {
+      for (let c = 0; c < subSize; c++) {
+        const color = cellColor(sub.solution[r][c]);
+        if (color) svg += `<rect x="${x + c*cell}" y="${y + r*cell}" width="${cell}" height="${cell}" fill="${color}"/>`;
+      }
+    }
+  }
+  svg += `</svg>`;
+  return svg;
+}
+
+// ── view state ─────────────────────────────
+let app;
+let state = {
+  view: 'library',
+  filter: 'all',
+  customLevels: [],
+  solved: [],
+  currentLevel: null,
+  parentLevel: null,      // when playing a sub-puzzle
+  playGrid: null,
+  playBrush: COLOR.moss,
+  _winShown: false,
+  editorSize: 5,
+  editorGrid: null,
+  editorName: '',
+  editorBrush: COLOR.moss,
+  editingId: null,
+};
+
+let dragAction = null;   // play-mode drag value (color, 'mark', or 0)
+let editorDrag = null;   // editor-mode drag value
+
+// undo/redo history for play mode
+let undoStack = [];
+let redoStack = [];
+const MAX_HISTORY = 80;
+
+function snapshotGrid() {
+  return state.playGrid.map(r => [...r]);
+}
+
+function pushUndo() {
+  undoStack.push(snapshotGrid());
+  if (undoStack.length > MAX_HISTORY) undoStack.shift();
+  redoStack = [];
+  updateUndoRedoButtons();
+}
+
+function undoPlay() {
+  if (!undoStack.length) return;
+  redoStack.push(snapshotGrid());
+  state.playGrid = undoStack.pop();
+  if (settings.autoCross) applyAllAutoCross();
+  render();
+}
+
+function redoPlay() {
+  if (!redoStack.length) return;
+  undoStack.push(snapshotGrid());
+  state.playGrid = redoStack.pop();
+  if (settings.autoCross) applyAllAutoCross();
+  render();
+}
+
+function resetUndoRedo() {
+  undoStack = [];
+  redoStack = [];
+  updateUndoRedoButtons();
+}
+
+function updateUndoRedoButtons() {
+  const u = document.getElementById('btn-undo');
+  const r = document.getElementById('btn-redo');
+  if (u) u.disabled = undoStack.length === 0;
+  if (r) r.disabled = redoStack.length === 0;
+}
+
+// auto-save state for editor
+let autoSaveTimer = null;
+let saveStatus = 'idle'; // 'idle' | 'saving' | 'saved'
+
+function scheduleAutoSave() {
+  if (state.view !== 'editor') return;
+  // Only schedule if there's something to save
+  const hasContent = state.editorGrid && state.editorGrid.flat().some(v => v !== 0);
+  if (!state.editingId && !hasContent) return; // nothing to save yet
+
+  saveStatus = 'saving';
+  updateSaveStatusUI();
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(() => { performAutoSave(); }, 500);
+}
+
+async function performAutoSave() {
+  autoSaveTimer = null;
+  if (state.view !== 'editor' && !state.editingId) return;
+
+  const hasContent = state.editorGrid && state.editorGrid.flat().some(v => v !== 0);
+  if (!state.editingId && !hasContent) {
+    saveStatus = 'idle';
+    updateSaveStatusUI();
+    return;
+  }
+
+  saveStatus = 'saving';
+  updateSaveStatusUI();
+
+  if (state.editingId) {
+    const idx = state.customLevels.findIndex(l => l.id === state.editingId);
+    if (idx >= 0) {
+      state.customLevels[idx] = {
+        ...state.customLevels[idx],
+        name: state.editorName.trim(),
+        size: state.editorSize,
+        solution: state.editorGrid.map(r => [...r]),
+      };
+    } else {
+      // entry was deleted elsewhere; recreate
+      state.customLevels.push({
+        id: state.editingId,
+        name: state.editorName.trim(),
+        size: state.editorSize,
+        solution: state.editorGrid.map(r => [...r]),
+        created: Date.now(),
+      });
+    }
+  } else {
+    const newId = 'custom-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+    state.editingId = newId;
+    state.customLevels.push({
+      id: newId,
+      name: state.editorName.trim(),
+      size: state.editorSize,
+      solution: state.editorGrid.map(r => [...r]),
+      created: Date.now(),
+    });
+  }
+
+  await saveCustomLevels(state.customLevels);
+  saveStatus = 'saved';
+  updateSaveStatusUI();
+}
+
+async function flushAutoSave() {
+  if (autoSaveTimer) {
+    clearTimeout(autoSaveTimer);
+    autoSaveTimer = null;
+    await performAutoSave();
+  }
+}
+
+function updateSaveStatusUI() {
+  const el = document.querySelector('.save-status');
+  if (!el) return;
+  el.classList.remove('done', 'saving');
+  if (saveStatus === 'saving') {
+    el.classList.add('saving');
+    el.innerHTML = '<span class="dot-saving"></span>Saving…';
+  } else if (saveStatus === 'saved') {
+    el.classList.add('done');
+    el.innerHTML = '<span class="check">✓</span>Saved';
+  } else {
+    el.innerHTML = '<span style="opacity:0.5">Not yet saved</span>';
+  }
+}
+
+function $el(tag, attrs = {}, ...children) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') el.className = v;
+    else if (k === 'style') el.style.cssText = v;
+    else if (k.startsWith('on') && typeof v === 'function') {
+      el.addEventListener(k.slice(2).toLowerCase(), v);
+    } else if (k === 'html') el.innerHTML = v;
+    else if (v !== null && v !== undefined) el.setAttribute(k, v);
+  }
+  for (const c of children) {
+    if (c === null || c === undefined || c === false) continue;
+    el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  }
+  return el;
+}
+
+function toast(msg) {
+  const t = $el('div', { class: 'toast' }, msg);
+  document.body.appendChild(t);
+  setTimeout(() => {
+    t.style.transition = 'opacity 0.4s, transform 0.4s';
+    t.style.opacity = '0';
+    t.style.transform = 'translate(-50%, -10px)';
+    setTimeout(() => t.remove(), 400);
+  }, 2200);
+}
+
+// ── header ─────────────────────────────────
+// ── auth view ──────────────────────────────
+function renderAuth() {
+  const wrap = $el('div', { class: 'auth-wrap' });
+  wrap.appendChild($el('div', { class: 'kanji-big', html: '禅' }));
+  wrap.appendChild($el('h2', { class: 'auth-title' }, 'Zen Nonogram'));
+  wrap.appendChild($el('p', { class: 'auth-sub' }, 'sign in to save your levels and progress'));
+
+  let mode = 'login'; // 'login' | 'register'
+
+  const errEl = $el('div', { class: 'auth-error' });
+  const form = $el('div', { class: 'auth-form' });
+
+  const userInput = $el('input', { type: 'text', placeholder: 'username', class: 'auth-input', autocomplete: 'username' });
+  const passInput = $el('input', { type: 'password', placeholder: 'password', class: 'auth-input', autocomplete: 'current-password' });
+  const submitBtn = $el('button', { class: 'btn auth-submit' }, 'Sign In');
+  const switchBtn = $el('button', { class: 'btn subtle auth-switch' }, "Don't have an account? Register");
+  const guestBtn = $el('button', { class: 'btn subtle auth-guest' }, 'Continue as guest');
+
+  const setMode = (m) => {
+    mode = m;
+    errEl.textContent = '';
+    if (m === 'login') {
+      submitBtn.textContent = 'Sign In';
+      switchBtn.textContent = "Don't have an account? Register";
+      passInput.autocomplete = 'current-password';
+    } else {
+      submitBtn.textContent = 'Create Account';
+      switchBtn.textContent = 'Already have an account? Sign In';
+      passInput.autocomplete = 'new-password';
+    }
+  };
+
+  switchBtn.onclick = () => setMode(mode === 'login' ? 'register' : 'login');
+
+  const doSubmit = async () => {
+    const u = userInput.value.trim();
+    const p = passInput.value;
+    errEl.textContent = '';
+    submitBtn.disabled = true;
+    submitBtn.textContent = '…';
+
+    if (mode === 'register') {
+      const res = await authRegister(u, p);
+      if (!res.ok) { errEl.textContent = res.err; submitBtn.disabled = false; setMode('register'); return; }
+      // auto-login after register
+      currentUser = { username: res.username };
+    } else {
+      const res = await authLogin(u, p);
+      if (!res.ok) { errEl.textContent = res.err; submitBtn.disabled = false; setMode('login'); return; }
+      currentUser = { username: res.username };
+    }
+
+    // load user-scoped data
+    state.customLevels = await loadUserCustomLevels(currentUser.username);
+    state.solved = await loadUserSolved(currentUser.username);
+    state.view = 'library';
+    render();
+  };
+
+  submitBtn.onclick = doSubmit;
+  userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') passInput.focus(); });
+  passInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSubmit(); });
+
+  guestBtn.onclick = async () => {
+    currentUser = null;
+    state.customLevels = await loadCustomLevels();
+    state.solved = await loadSolved();
+    state.view = 'library';
+    render();
+  };
+
+  form.appendChild(errEl);
+  form.appendChild(userInput);
+  form.appendChild(passInput);
+  form.appendChild(submitBtn);
+  form.appendChild(switchBtn);
+  form.appendChild(guestBtn);
+  wrap.appendChild(form);
+  return wrap;
+}
+
+function renderBrand() {
+  const header = $el('header', { class: 'brand' },
+    $el('div', { class: 'brand-mark', html: '<span class="kanji">禅</span>Zen Nonogram' }),
+    $el('div', { class: 'brand-tag' }, 'a quiet picture puzzle')
+  );
+  if (state.view !== 'auth') {
+    const userArea = $el('div', { class: 'brand-user' });
+    if (currentUser) {
+      userArea.appendChild($el('span', { class: 'brand-username' }, currentUser.username));
+      userArea.appendChild($el('button', {
+        class: 'btn subtle brand-signout',
+        onclick: async () => {
+          currentUser = null;
+          state.customLevels = await loadCustomLevels();
+          state.solved = await loadSolved();
+          state.view = 'library';
+          resetUndoRedo();
+          render();
+        }
+      }, 'Sign out'));
+    } else {
+      userArea.appendChild($el('button', {
+        class: 'btn subtle brand-signout',
+        onclick: () => { state.view = 'auth'; render(); }
+      }, 'Sign in'));
+    }
+    header.appendChild(userArea);
+  }
+  return header;
+}
+
+// ── library ────────────────────────────────
+function compoundSolvedCount(compound) {
+  return compound.subs.filter(s => state.solved.includes(compound.id + ':' + s.id)).length;
+}
+
+function renderLibrary() {
+  const wrap = $el('div', {});
+  const tab = (key, label) => $el('button', {
+    class: 'filter-tab' + (state.filter === key ? ' active' : ''),
+    onclick: () => { state.filter = key; render(); }
+  }, label);
+
+  wrap.appendChild($el('div', { class: 'section-head' },
+    $el('h2', { class: 'section-title', html: '<span class="accent">絵</span>Library' }),
+    $el('div', { class: 'filter-tabs' },
+      tab('all', 'All'), tab('system', 'Built-in'), tab('custom', 'Mine')
+    )
+  ));
+
+  const grid = $el('div', { class: 'level-grid' });
+  let levels = [];
+  if (state.filter === 'all') levels = [...COMPOUND_LEVELS, ...SYSTEM_LEVELS, ...state.customLevels];
+  else if (state.filter === 'system') levels = [...COMPOUND_LEVELS, ...SYSTEM_LEVELS];
+  else levels = state.customLevels;
+
+  for (const level of levels) {
+    if (level.type === 'compound') {
+      grid.appendChild(renderCompoundCard(level));
+    } else {
+      grid.appendChild(renderRegularCard(level));
+    }
+  }
+
+  grid.appendChild($el('article', {
+    class: 'level-card create-card',
+    onclick: () => openEditor(null)
+  },
+    $el('div', { class: 'plus' }, '+'),
+    $el('div', { class: 'label' }, 'Create')
+  ));
+
+  if (levels.length === 0 && state.filter === 'custom') {
+    grid.insertBefore(
+      $el('div', { class: 'empty-state' }, 'No custom puzzles yet. Make one →'),
+      grid.lastChild
+    );
+  }
+
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+function renderRegularCard(level) {
+  const isCustom = !level.id.startsWith('sys-');
+  const isSolved = state.solved.includes(level.id);
+  const card = $el('article', {
+    class: 'level-card' + (isSolved ? ' solved' : ''),
+    onclick: (e) => {
+      if (e.target.classList.contains('delete-btn') || e.target.classList.contains('edit-btn')) return;
+      openLevel(level);
+    }
+  });
+  if (level.kanji && !isCustom) {
+    card.appendChild($el('span', { class: 'level-badge' }, level.kanji));
+  } else if (isCustom) {
+    card.appendChild($el('span', { class: 'level-badge', style: 'color: var(--moss)' }, 'YOURS'));
+  }
+  card.appendChild($el('div', { class: 'preview', html: previewSVG(level.solution) }));
+  card.appendChild($el('div', { class: 'level-meta' },
+    $el('div', { class: 'level-name' }, level.name || 'Untitled'),
+    $el('div', { class: 'level-size' }, `${level.size} × ${level.size}`)
+  ));
+  if (isCustom) {
+    card.appendChild($el('button', {
+      class: 'edit-btn',
+      title: 'Edit',
+      onclick: (e) => { e.stopPropagation(); openEditor(level); }
+    }, 'edit'));
+    card.appendChild($el('button', {
+      class: 'delete-btn',
+      title: 'Delete',
+      onclick: async (e) => {
+        e.stopPropagation();
+        if (confirm(`Delete "${level.name || 'Untitled'}"?`)) {
+          state.customLevels = state.customLevels.filter(l => l.id !== level.id);
+          await saveCustomLevels(state.customLevels);
+          toast('Removed.');
+          render();
+        }
+      }
+    }, 'delete'));
+  }
+  return card;
+}
+
+function renderCompoundCard(compound) {
+  const solvedCount = compoundSolvedCount(compound);
+  const total = compound.subs.length;
+  const isAllDone = solvedCount === total;
+  const card = $el('article', {
+    class: 'level-card compound' + (isAllDone ? ' all-done' : ''),
+    onclick: () => openCompound(compound),
+  });
+  card.appendChild($el('span', { class: 'level-badge', style: 'color: var(--gold)' }, compound.kanji));
+  card.appendChild($el('div', { class: 'preview', html: compoundPreviewSVG(compound, state.solved) }));
+  card.appendChild($el('div', { class: 'level-meta' },
+    $el('div', { class: 'level-name' }, compound.name),
+    $el('div', { class: 'level-size' }, `${solvedCount} / ${total} tiles`)
+  ));
+  return card;
+}
+
+// ── compound view ──────────────────────────
+function openCompound(compound) {
+  state.view = 'compound';
+  state.currentLevel = null;
+  state.parentLevel = compound;
+  render();
+}
+
+function renderCompound() {
+  const compound = state.parentLevel;
+  const solvedCount = compoundSolvedCount(compound);
+  const total = compound.subs.length;
+  const allDone = solvedCount === total;
+
+  const wrap = $el('div', {});
+  wrap.appendChild($el('button', {
+    class: 'back-btn',
+    onclick: () => { state.view = 'library'; state.parentLevel = null; render(); }
+  }, 'Library'));
+
+  wrap.appendChild($el('div', { class: 'play-head' },
+    $el('h1', { class: 'play-title' },
+      compound.name,
+      $el('span', { class: 'size-label' }, `${compound.subSize} × ${compound.subSize} · 4 tiles`)
+    )
+  ));
+
+  const stage = $el('div', { class: 'compound-stage' });
+
+  stage.appendChild($el('p', { class: 'compound-intro' },
+    allDone
+      ? 'All four tiles complete. The picture is ready to be seen as a whole.'
+      : 'Solve each of the four tiles. When all four are complete, they will combine into one image.'
+  ));
+
+  const subGrid = $el('div', { class: 'sub-grid' });
+  for (const sub of compound.subs) {
+    const subKey = compound.id + ':' + sub.id;
+    const solved = state.solved.includes(subKey);
+    const card = $el('div', {
+      class: 'sub-card' + (solved ? ' solved' : ''),
+      onclick: () => openSubLevel(compound, sub),
+    });
+    if (solved) card.appendChild($el('span', { class: 'sub-check' }, '✓'));
+    card.appendChild($el('div', { class: 'sub-kanji' }, sub.kanji));
+    card.appendChild($el('div', { class: 'sub-name' }, sub.name));
+    card.appendChild($el('div', { class: 'sub-preview', html: subPreviewSVG(sub, solved) }));
+    card.appendChild($el('div', { class: 'sub-status' }, solved ? 'complete' : 'untouched'));
+    subGrid.appendChild(card);
+  }
+  stage.appendChild(subGrid);
+
+  stage.appendChild($el('div', { class: 'progress-pill' + (allDone ? ' complete' : '') },
+    'Progress',
+    $el('span', { class: 'count' }, `${solvedCount} / ${total}`)
+  ));
+
+  if (allDone) {
+    stage.appendChild($el('button', {
+      class: 'btn gold',
+      onclick: () => { state.view = 'compound-reveal'; render(); }
+    }, '✦ View Combined Picture'));
+  }
+
+  wrap.appendChild(stage);
+  return wrap;
+}
+
+// ── compound reveal view ───────────────────
+function renderCompoundReveal() {
+  const compound = state.parentLevel;
+  const wrap = $el('div', {});
+
+  wrap.appendChild($el('button', {
+    class: 'back-btn',
+    onclick: () => { state.view = 'compound'; render(); }
+  }, 'Back to Tiles'));
+
+  const stage = $el('div', { class: 'reveal-stage' });
+  stage.appendChild($el('div', { class: 'reveal-caption', html: `<span class="kanji-mark">${compound.kanji}</span>${compound.name}` }));
+  stage.appendChild($el('div', { class: 'reveal-frame', html: combinedRevealSVG(compound) }));
+  stage.appendChild($el('p', { class: 'compound-intro' }, 'Four tiles, one quiet view.'));
+  stage.appendChild($el('div', { class: 'controls' },
+    $el('button', {
+      class: 'btn',
+      onclick: () => { state.view = 'library'; state.parentLevel = null; render(); }
+    }, 'Library'),
+  ));
+
+  wrap.appendChild(stage);
+  return wrap;
+}
+
+// ── sub-level play ─────────────────────────
+function openSubLevel(compound, sub) {
+  state.view = 'play';
+  state.parentLevel = compound;
+  state.currentLevel = {
+    id: compound.id + ':' + sub.id,
+    name: sub.name,
+    kanji: sub.kanji,
+    size: compound.subSize,
+    solution: sub.solution,
+    isSubLevel: true,
+    parentName: compound.name,
+  };
+  state.playGrid = makeEmpty(compound.subSize);
+  const cols = colorsInPuzzle(sub.solution);
+  state.playBrush = cols[0] || COLOR.moss;
+  state._winShown = false;
+  resetUndoRedo();
+  render();
+}
+
+// ── play view ──────────────────────────────
+function openLevel(level) {
+  state.view = 'play';
+  state.parentLevel = null;
+  state.currentLevel = level;
+  state.playGrid = makeEmpty(level.size);
+  const cols = colorsInPuzzle(level.solution);
+  state.playBrush = cols[0] || COLOR.moss;
+  state._winShown = false;
+  resetUndoRedo();
+  render();
+}
+
+function renderPlay() {
+  const level = state.currentLevel;
+  const { rowClues, colClues } = computeClues(level.solution);
+  const usedColors = colorsInPuzzle(level.solution);
+
+  const wrap = $el('div', {});
+
+  // back button context-aware
+  const isTest = level.id === '__test__';
+  const backLabel = isTest ? 'Editor' : (state.parentLevel ? state.parentLevel.name : 'Library');
+  wrap.appendChild($el('button', {
+    class: 'back-btn',
+    onclick: () => {
+      if (isTest) { state.view = 'editor'; state.currentLevel = null; }
+      else if (state.parentLevel) { state.view = 'compound'; state.currentLevel = null; }
+      else { state.view = 'library'; state.currentLevel = null; }
+      render();
+    }
+  }, backLabel));
+
+  const titleEls = [
+    level.name,
+    $el('span', { class: 'size-label' }, `${level.size} × ${level.size}`)
+  ];
+  if (level.isSubLevel) {
+    titleEls.unshift($el('span', { class: 'crumb' }, `${level.parentName} · `));
+  }
+  wrap.appendChild($el('div', { class: 'play-head' },
+    $el('h1', { class: 'play-title' }, ...titleEls)
+  ));
+
+  const stage = $el('div', { class: 'puzzle-stage' });
+
+  const palette = $el('div', { class: 'palette-bar' });
+  for (const col of usedColors) {
+    palette.appendChild($el('div', {
+      class: 'palette-swatch' + (state.playBrush === col ? ' active' : ''),
+      title: 'Paint',
+      style: `background:${col}`,
+      onclick: () => { state.playBrush = col; render(); }
+    }));
+  }
+  palette.appendChild($el('div', { class: 'palette-divider' }));
+  palette.appendChild($el('div', {
+    class: 'palette-swatch mark' + (state.playBrush === 'mark' ? ' active' : ''),
+    title: 'Mark',
+    onclick: () => { state.playBrush = 'mark'; render(); }
+  }));
+  stage.appendChild(palette);
+
+  stage.appendChild(buildPuzzleGrid(level, rowClues, colClues));
+
+  const controls = $el('div', { class: 'controls' });
+
+  const undoBtn = $el('button', {
+    class: 'btn subtle',
+    id: 'btn-undo',
+    title: 'Undo last move',
+    onclick: () => undoPlay()
+  }, '↩ Undo');
+  undoBtn.disabled = undoStack.length === 0;
+  controls.appendChild(undoBtn);
+
+  const redoBtn = $el('button', {
+    class: 'btn subtle',
+    id: 'btn-redo',
+    title: 'Redo',
+    onclick: () => redoPlay()
+  }, '↪ Redo');
+  redoBtn.disabled = redoStack.length === 0;
+  controls.appendChild(redoBtn);
+
+  controls.appendChild($el('button', {
+    class: 'btn toggle' + (settings.autoCross ? ' on' : ''),
+    onclick: async () => {
+      settings.autoCross = !settings.autoCross;
+      await saveSettings();
+      if (settings.autoCross) applyAllAutoCross();
+      render();
+    },
+    title: 'When a row or column is fully filled correctly, auto-mark the remaining empty cells'
+  },
+    $el('span', { class: 'dot' }),
+    'Auto-Cross'
+  ));
+  controls.appendChild($el('button', {
+    class: 'btn subtle',
+    onclick: () => {
+      if (state.playGrid.flat().some(v => v !== 0)) {
+        if (confirm('Clear the board?')) {
+          state.playGrid = makeEmpty(level.size);
+          state._winShown = false;
+          resetUndoRedo();
+          render();
+        }
+      }
+    }
+  }, 'Reset'));
+  controls.appendChild($el('button', {
+    class: 'btn subtle',
+    onclick: () => {
+      if (confirm('Reveal the solution? This will not count as solved.')) {
+        state.playGrid = level.solution.map(row => row.map(v => cellColor(v) || 0));
+        render();
+      }
+    }
+  }, 'Reveal'));
+  stage.appendChild(controls);
+  wrap.appendChild(stage);
+
+  if (isComplete(state.playGrid, level.solution) && !state._winShown) {
+    state._winShown = true;
+    setTimeout(() => showWin(level), 350);
+  }
+  return wrap;
+}
+
+function buildPuzzleGrid(level, rowClues, colClues) {
+  const n = level.size;
+  let cellSize, clueSize;
+  if (n <= 5) { cellSize = 50; clueSize = 18; }
+  else if (n <= 10) { cellSize = 36; clueSize = 15; }
+  else if (n <= 15) { cellSize = 28; clueSize = 13; }
+  else { cellSize = 22; clueSize = 11; }
+
+  const maxRow = Math.max(...rowClues.map(c => c.length));
+  const maxCol = Math.max(...colClues.map(c => c.length));
+
+  const wrap = $el('div', { class: 'puzzle-wrap' });
+  const grid = $el('div', {
+    class: 'puzzle-grid',
+    style: `--cell-size:${cellSize}px;--clue-size:${clueSize}px;grid-template-columns:repeat(${n + 1}, auto);`
+  });
+
+  grid.appendChild($el('div', { class: 'corner' }));
+
+  for (let c = 0; c < n; c++) {
+    const cell = $el('div', {
+      class: 'clue-cell col',
+      'data-col': c,
+      style: `min-height:${maxCol * (clueSize + 3) + 8}px;`
+    });
+    const done = isColumnDone(state.playGrid, level.solution, c);
+    for (const clue of colClues[c]) {
+      cell.appendChild($el('span', {
+        class: 'clue-num' + (done ? ' done' : ''),
+        style: `color:${clue.color};`
+      }, String(clue.count)));
+    }
+    grid.appendChild(cell);
+  }
+
+  for (let r = 0; r < n; r++) {
+    const clueCell = $el('div', {
+      class: 'clue-cell row',
+      'data-row': r,
+      style: `min-width:${maxRow * (clueSize + 8) + 10}px;`
+    });
+    const done = isRowDone(state.playGrid, level.solution, r);
+    for (const clue of rowClues[r]) {
+      clueCell.appendChild($el('span', {
+        class: 'clue-num' + (done ? ' done' : ''),
+        style: `color:${clue.color};`
+      }, String(clue.count)));
+    }
+    grid.appendChild(clueCell);
+
+    for (let c = 0; c < n; c++) {
+      const v = state.playGrid[r][c];
+      const color = cellColor(v);
+      const classes = ['cell'];
+      if (color) classes.push('filled');
+      if (v === 'mark') classes.push('marked');
+      if ((c + 1) % 5 === 0 && c < n - 1) classes.push('b-right');
+      if ((r + 1) % 5 === 0 && r < n - 1) classes.push('b-bottom');
+
+      const cell = $el('div', {
+        class: classes.join(' '),
+        'data-r': r,
+        'data-c': c,
+        style: color ? `background:${color};` : '',
+        onpointerdown: (e) => onPlayPointerDown(r, c, e),
+        onpointerenter: () => onPlayPointerEnter(r, c),
+        oncontextmenu: (e) => { e.preventDefault(); handleCellRight(r, c); },
+        onmouseenter: () => highlightLine(r, c, true),
+        onmouseleave: () => highlightLine(r, c, false),
+      });
+      grid.appendChild(cell);
+    }
+  }
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+// ── play-mode cell interactions ────────────
+function updateCellDOM(r, c) {
+  const v = state.playGrid[r][c];
+  const el = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+  if (!el) return;
+  const color = cellColor(v);
+  el.classList.remove('filled', 'marked', 'auto-marked');
+  el.style.background = '';
+  if (color) {
+    el.classList.add('filled');
+    el.style.background = color;
+  } else if (v === 'mark') {
+    el.classList.add('marked');
+  } else if (v === 'auto-mark') {
+    el.classList.add('marked', 'auto-marked');
+  }
+}
+
+function updateLineClues(r, c) {
+  const grid = document.querySelector('.puzzle-grid');
+  if (!grid || !state.currentLevel) return;
+  const sol = state.currentLevel.solution;
+  if (r !== null) {
+    const rowEl = grid.querySelector(`.clue-cell.row[data-row="${r}"]`);
+    if (rowEl) {
+      const done = isRowDone(state.playGrid, sol, r);
+      rowEl.querySelectorAll('.clue-num').forEach(n => n.classList.toggle('done', done));
+    }
+  }
+  if (c !== null) {
+    const colEl = grid.querySelector(`.clue-cell.col[data-col="${c}"]`);
+    if (colEl) {
+      const done = isColumnDone(state.playGrid, sol, c);
+      colEl.querySelectorAll('.clue-num').forEach(n => n.classList.toggle('done', done));
+    }
+  }
+}
+
+function autoCrossLine(kind, idx) {
+  const sol = state.currentLevel.solution;
+  const n = sol.length;
+  if (kind === 'row') {
+    for (let c = 0; c < n; c++) {
+      if (sol[idx][c] === 0 && state.playGrid[idx][c] === 0) {
+        state.playGrid[idx][c] = 'auto-mark';
+        updateCellDOM(idx, c);
+      }
+    }
+  } else {
+    for (let r = 0; r < n; r++) {
+      if (sol[r][idx] === 0 && state.playGrid[r][idx] === 0) {
+        state.playGrid[r][idx] = 'auto-mark';
+        updateCellDOM(r, idx);
+      }
+    }
+  }
+}
+
+function applyCellInPlay(r, c, value) {
+  // promote auto-mark to manual mark when player explicitly marks
+  if (state.playGrid[r][c] === 'auto-mark' && value === 0 && state.playBrush !== 'mark') {
+    // leave it as auto-mark when painting/erasing erases this cell
+    // (caller already decided to set to 0, fine)
+  }
+  state.playGrid[r][c] = value;
+  updateCellDOM(r, c);
+
+  if (settings.autoCross && state.currentLevel) {
+    const sol = state.currentLevel.solution;
+    if (isRowDone(state.playGrid, sol, r)) autoCrossLine('row', r);
+    if (isColumnDone(state.playGrid, sol, c)) autoCrossLine('col', c);
+  }
+  updateLineClues(r, c);
+}
+
+function applyAllAutoCross() {
+  if (!state.currentLevel) return;
+  const sol = state.currentLevel.solution;
+  const n = sol.length;
+  for (let r = 0; r < n; r++) {
+    if (isRowDone(state.playGrid, sol, r)) autoCrossLine('row', r);
+  }
+  for (let c = 0; c < n; c++) {
+    if (isColumnDone(state.playGrid, sol, c)) autoCrossLine('col', c);
+  }
+}
+
+function onPlayPointerDown(r, c, e) {
+  e.preventDefault();
+  if (e.button === 2) return; // right-click handled separately
+  const cur = state.playGrid[r][c];
+  const brush = state.playBrush;
+  // tapping a cell that already matches brush → erase it (and any auto-mark)
+  // auto-marks should be treated as empty for painting decisions
+  const effectiveCur = (cur === 'auto-mark') ? 0 : cur;
+  if (effectiveCur === brush) {
+    dragAction = 0;
+  } else {
+    dragAction = brush;
+  }
+  pushUndo(); // snapshot before the gesture begins
+  applyCellInPlay(r, c, dragAction);
+}
+
+function onPlayPointerEnter(r, c) {
+  if (dragAction === null) return;
+  const cur = state.playGrid[r][c];
+  const effectiveCur = (cur === 'auto-mark') ? 0 : cur;
+  if (effectiveCur === dragAction) return;
+  // when erasing during a drag, don't clear other-color cells unintentionally
+  if (dragAction === 0) {
+    // only erase if current matches what we were erasing from (the starting brush)
+    if (cur !== 0 && cur !== 'auto-mark') {
+      // erase too — players expect "drag-erase" to clear anything painted
+      applyCellInPlay(r, c, 0);
+    }
+    return;
+  }
+  applyCellInPlay(r, c, dragAction);
+}
+
+function handleCellRight(r, c) {
+  // right-click toggles a manual mark
+  const cur = state.playGrid[r][c];
+  const newVal = (cur === 'mark') ? 0 : 'mark';
+  pushUndo();
+  applyCellInPlay(r, c, newVal);
+  checkAndShowWin();
+}
+
+function checkAndShowWin() {
+  if (state._winShown || !state.currentLevel) return;
+  if (isComplete(state.playGrid, state.currentLevel.solution)) {
+    state._winShown = true;
+    setTimeout(() => showWin(state.currentLevel), 350);
+  }
+}
+
+function highlightLine(r, c, on) {
+  if (dragAction !== null) return; // skip highlighting while dragging
+  const grid = document.querySelector('.puzzle-grid');
+  if (!grid) return;
+  grid.querySelectorAll('.cell').forEach(el => el.classList.remove('row-hover', 'col-hover'));
+  grid.querySelectorAll('.clue-cell').forEach(el => el.classList.remove('highlighted'));
+  if (!on) return;
+  grid.querySelectorAll(`.cell[data-r="${r}"]`).forEach(el => el.classList.add('row-hover'));
+  grid.querySelectorAll(`.cell[data-c="${c}"]`).forEach(el => el.classList.add('col-hover'));
+  const rc = grid.querySelector(`.clue-cell.row[data-row="${r}"]`);
+  if (rc) rc.classList.add('highlighted');
+  const cc = grid.querySelector(`.clue-cell.col[data-col="${c}"]`);
+  if (cc) cc.classList.add('highlighted');
+}
+
+// ── win overlay ────────────────────────────
+function showWin(level) {
+  markSolved(level.id);
+  if (!state.solved.includes(level.id)) state.solved.push(level.id);
+
+  const isSub = !!level.isSubLevel;
+  const overlay = $el('div', { class: 'win-overlay' });
+  const card = $el('div', { class: 'win-card' });
+  card.appendChild($el('div', { class: 'kanji-big' }, level.kanji || '✓'));
+  card.appendChild($el('h2', {}, 'Solved'));
+
+  if (isSub) {
+    const compound = state.parentLevel;
+    const solvedCount = compoundSolvedCount(compound);
+    const total = compound.subs.length;
+    const isLast = solvedCount === total;
+    card.appendChild($el('p', {}, isLast
+      ? `Final tile complete — "${compound.name}" is whole.`
+      : `${level.name} complete. ${total - solvedCount} more to go.`
+    ));
+    const actions = $el('div', { class: 'win-actions' });
+    actions.appendChild($el('button', {
+      class: 'btn',
+      onclick: () => {
+        overlay.remove();
+        state._winShown = false;
+        state.playGrid = makeEmpty(level.size);
+        render();
+      }
+    }, 'Play Again'));
+    if (isLast) {
+      actions.appendChild($el('button', {
+        class: 'btn primary gold',
+        onclick: () => {
+          overlay.remove();
+          state._winShown = false;
+          state.view = 'compound-reveal';
+          state.currentLevel = null;
+          render();
+        }
+      }, '✦ View Combined'));
+    } else {
+      actions.appendChild($el('button', {
+        class: 'btn primary',
+        onclick: () => {
+          overlay.remove();
+          state._winShown = false;
+          state.view = 'compound';
+          state.currentLevel = null;
+          render();
+        }
+      }, 'Back to Tiles'));
+    }
+    card.appendChild(actions);
+  } else {
+    card.appendChild($el('p', {}, `"${level.name}" — quiet patience rewarded.`));
+    card.appendChild($el('div', { class: 'win-actions' },
+      $el('button', {
+        class: 'btn',
+        onclick: () => {
+          overlay.remove();
+          state._winShown = false;
+          state.playGrid = makeEmpty(level.size);
+          render();
+        }
+      }, 'Play Again'),
+      $el('button', {
+        class: 'btn primary',
+        onclick: () => {
+          overlay.remove();
+          state._winShown = false;
+          state.view = 'library';
+          state.currentLevel = null;
+          render();
+        }
+      }, 'Library')
+    ));
+  }
+
+  overlay.appendChild(card);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) { overlay.remove(); state._winShown = false; }
+  });
+  document.body.appendChild(overlay);
+}
+
+// ── editor ─────────────────────────────────
+function openEditor(existing) {
+  state.view = 'editor';
+  state.parentLevel = null;
+  state.currentLevel = null;
+  if (existing) {
+    state.editorSize = existing.size;
+    state.editorGrid = existing.solution.map(r => r.map(v => cellColor(v) || 0));
+    state.editorName = existing.name;
+    state.editingId = existing.id;
+    saveStatus = 'saved';
+  } else {
+    state.editorSize = 10;
+    state.editorGrid = makeEmpty(10);
+    state.editorName = '';
+    state.editingId = null;
+    saveStatus = 'idle';
+  }
+  state.editorBrush = COLOR.moss;
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = null;
+  render();
+}
+
+function renderEditor() {
+  const wrap = $el('div', {});
+  wrap.appendChild($el('button', {
+    class: 'back-btn',
+    onclick: async () => { await flushAutoSave(); state.view = 'library'; render(); }
+  }, 'Library'));
+
+  const sizeBtn = (s) => $el('button', {
+    class: 'size-btn' + (state.editorSize === s ? ' active' : ''),
+    onclick: async () => {
+      if (state.editorGrid.flat().some(v => v) && state.editorSize !== s) {
+        if (!confirm('Change size? This will clear your drawing.')) return;
+      }
+      state.editorSize = s;
+      state.editorGrid = makeEmpty(s);
+      if (state.editingId) scheduleAutoSave();
+      render();
+    }
+  }, `${s} × ${s}`);
+
+  wrap.appendChild($el('div', { class: 'section-head' },
+    $el('h2', { class: 'section-title', html: '<span class="accent">作</span>Compose' })
+  ));
+
+  wrap.appendChild($el('div', { class: 'editor-head' },
+    $el('div', { class: 'input-group' },
+      $el('label', {}, 'Title'),
+      (() => {
+        const inp = $el('input', {
+          class: 'text-input', type: 'text', placeholder: 'Name your puzzle…',
+          maxlength: 40, value: state.editorName,
+        });
+        inp.addEventListener('input', (e) => { state.editorName = e.target.value; scheduleAutoSave(); });
+        return inp;
+      })()
+    ),
+    $el('div', { class: 'input-group' },
+      $el('label', {}, 'Size'),
+      $el('div', { class: 'size-picker' },
+        sizeBtn(5), sizeBtn(10), sizeBtn(15), sizeBtn(20)
+      )
+    )
+  ));
+
+  const palette = $el('div', { class: 'palette-bar' });
+  for (const p of PALETTE_ARR) {
+    palette.appendChild($el('div', {
+      class: 'palette-swatch' + (state.editorBrush === p.hex ? ' active' : ''),
+      title: p.name,
+      style: `background:${p.hex}`,
+      onclick: () => { state.editorBrush = p.hex; render(); }
+    }));
+  }
+  palette.appendChild($el('div', { class: 'palette-divider' }));
+  palette.appendChild($el('div', {
+    class: 'palette-swatch erase' + (state.editorBrush === 0 ? ' active' : ''),
+    title: 'Eraser',
+    onclick: () => { state.editorBrush = 0; render(); }
+  }));
+  wrap.appendChild($el('div', { class: 'editor-palette-row' }, palette));
+
+  wrap.appendChild($el('div', { class: 'editor-hint' },
+    'Pick a color, then click or drag across cells to paint.'
+  ));
+
+  const n = state.editorSize;
+  let cellSize;
+  if (n <= 5) cellSize = 50;
+  else if (n <= 10) cellSize = 36;
+  else if (n <= 15) cellSize = 28;
+  else cellSize = 22;
+
+  const gridWrap = $el('div', { class: 'editor-grid-wrap' });
+  const grid = $el('div', {
+    class: 'editor-grid',
+    style: `--cell-size:${cellSize}px;grid-template-columns:repeat(${n}, ${cellSize}px);`
+  });
+
+  const apply = (r, c, val) => {
+    state.editorGrid[r][c] = val;
+    const el = document.querySelector(`.editor-cell[data-r="${r}"][data-c="${c}"]`);
+    if (el) {
+      if (val) { el.classList.add('filled'); el.style.background = val; }
+      else { el.classList.remove('filled'); el.style.background = ''; }
+    }
+    scheduleAutoSave();
+  };
+
+  const onDown = (r, c, e) => {
+    e.preventDefault();
+    const cur = state.editorGrid[r][c];
+    if (state.editorBrush === 0) editorDrag = 0;
+    else if (cur === state.editorBrush) editorDrag = 0;
+    else editorDrag = state.editorBrush;
+    apply(r, c, editorDrag);
+  };
+  const onEnter = (r, c) => {
+    if (editorDrag === null) return;
+    if (state.editorGrid[r][c] !== editorDrag) apply(r, c, editorDrag);
+  };
+
+  for (let r = 0; r < n; r++) {
+    for (let c = 0; c < n; c++) {
+      const v = state.editorGrid[r][c];
+      const classes = ['editor-cell'];
+      if (v) classes.push('filled');
+      if ((c + 1) % 5 === 0 && c < n - 1) classes.push('b-right');
+      if ((r + 1) % 5 === 0 && r < n - 1) classes.push('b-bottom');
+      const cell = $el('div', {
+        class: classes.join(' '),
+        'data-r': r,
+        'data-c': c,
+        style: v ? `background:${v};` : '',
+        onpointerdown: (e) => onDown(r, c, e),
+        onpointerenter: () => onEnter(r, c),
+      });
+      grid.appendChild(cell);
+    }
+  }
+  gridWrap.appendChild(grid);
+  wrap.appendChild(gridWrap);
+
+  const actions = $el('div', { class: 'controls' },
+    $el('button', {
+      class: 'btn subtle',
+      onclick: () => {
+        if (state.editorGrid.flat().some(v => v)) {
+          if (confirm('Clear the canvas?')) {
+            state.editorGrid = makeEmpty(state.editorSize);
+            if (state.editingId) scheduleAutoSave();
+            render();
+          }
+        }
+      }
+    }, 'Clear'),
+    $el('button', {
+      class: 'btn',
+      onclick: async () => { await flushAutoSave(); testEditorPuzzle(); }
+    }, 'Test Play'),
+    $el('div', { class: 'save-status' + (saveStatus === 'saved' ? ' done' : (saveStatus === 'saving' ? ' saving' : '')) },
+      saveStatus === 'saving' ? $el('span', { class: 'dot-saving' }) : null,
+      saveStatus === 'saved' ? $el('span', { class: 'check' }, '✓') : null,
+      saveStatus === 'saving' ? 'Saving…'
+        : saveStatus === 'saved' ? 'Saved'
+        : (state.editingId ? 'Saved' : (state.editorGrid.flat().some(v => v) ? 'Pending…' : 'Auto-saves'))
+    ),
+    state.editingId ? $el('button', {
+      class: 'btn danger',
+      onclick: async () => {
+        if (confirm('Delete this puzzle?')) {
+          clearTimeout(autoSaveTimer); autoSaveTimer = null;
+          state.customLevels = state.customLevels.filter(l => l.id !== state.editingId);
+          await saveCustomLevels(state.customLevels);
+          state.editingId = null;
+          saveStatus = 'idle';
+          toast('Removed.');
+          state.view = 'library';
+          render();
+        }
+      }
+    }, 'Delete') : null
+  );
+  wrap.appendChild(actions);
+
+  return wrap;
+}
+
+function testEditorPuzzle() {
+  if (!state.editorGrid.flat().some(v => v)) { toast('Draw something first.'); return; }
+  state.view = 'play';
+  state.parentLevel = null;
+  state.currentLevel = {
+    id: '__test__',
+    name: state.editorName || 'Test Puzzle',
+    size: state.editorSize,
+    solution: state.editorGrid.map(r => [...r]),
+  };
+  state.playGrid = makeEmpty(state.editorSize);
+  const cols = colorsInPuzzle(state.currentLevel.solution);
+  state.playBrush = cols[0] || COLOR.moss;
+  state._winShown = false;
+  render();
+}
+
+async function saveEditorPuzzle() {
+  if (!state.editorName.trim()) { toast('Give your puzzle a title.'); return; }
+  const filled = state.editorGrid.flat().filter(v => v !== 0).length;
+  if (filled === 0) { toast('Draw something first.'); return; }
+  if (filled === state.editorSize * state.editorSize) {
+    toast('Add some empty cells too.'); return;
+  }
+
+  if (state.editingId) {
+    const idx = state.customLevels.findIndex(l => l.id === state.editingId);
+    if (idx >= 0) {
+      state.customLevels[idx] = {
+        ...state.customLevels[idx],
+        name: state.editorName.trim(),
+        size: state.editorSize,
+        solution: state.editorGrid.map(r => [...r]),
+      };
+    }
+  } else {
+    state.customLevels.push({
+      id: 'custom-' + Date.now() + '-' + Math.floor(Math.random()*1000),
+      name: state.editorName.trim(),
+      size: state.editorSize,
+      solution: state.editorGrid.map(r => [...r]),
+      created: Date.now(),
+    });
+  }
+  await saveCustomLevels(state.customLevels);
+  toast(state.editingId ? 'Updated.' : 'Saved.');
+  state.view = 'library';
+  state.filter = 'custom';
+  render();
+}
+
+// ── render router ──────────────────────────
+function render() {
+  app.innerHTML = '';
+  app.appendChild(renderBrand());
+  if (state.view === 'auth') { app.appendChild(renderAuth()); }
+  else if (state.view === 'library') app.appendChild(renderLibrary());
+  else if (state.view === 'play') app.appendChild(renderPlay());
+  else if (state.view === 'editor') app.appendChild(renderEditor());
+  else if (state.view === 'compound') app.appendChild(renderCompound());
+  else if (state.view === 'compound-reveal') app.appendChild(renderCompoundReveal());
+
+  if (state.view !== 'auth') {
+    app.appendChild($el('footer', { class: 'footer' },
+      $el('span', {}, hasStorage ? 'your puzzles save automatically' : 'storage unavailable — puzzles last this session only'),
+      $el('span', { html: '<span class="kanji-mark">禅</span> made with quietness' })
+    ));
+  }
+}
+
+// ── init ───────────────────────────────────
+async function init() {
+  app = document.getElementById('app');
+
+  document.addEventListener('contextmenu', (e) => {
+    if (e.target.closest('.cell')) e.preventDefault();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (state.view !== 'play') return;
+    const ctrl = e.ctrlKey || e.metaKey;
+    if (ctrl && e.key === 'z' && !e.shiftKey) { e.preventDefault(); undoPlay(); }
+    if (ctrl && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); redoPlay(); }
+  });
+
+  // global pointerup ends any active drag and checks win
+  document.addEventListener('pointerup', () => {
+    if (dragAction !== null) {
+      dragAction = null;
+      checkAndShowWin();
+    }
+    if (editorDrag !== null) {
+      editorDrag = null;
+    }
+  });
+  // also handle pointercancel (e.g. on mobile when interrupted)
+  document.addEventListener('pointercancel', () => {
+    dragAction = null;
+    editorDrag = null;
+  });
+
+  await loadSettings();
+  // Check if users exist — if so, show auth screen; otherwise go straight to library as guest
+  const users = await loadUsers();
+  if (Object.keys(users).length > 0) {
+    // There are registered accounts — prompt sign in
+    state.view = 'auth';
+    state.customLevels = [];
+    state.solved = [];
+    render();
+  } else {
+    // No accounts yet — go straight as guest, auth available via header
+    currentUser = null;
+    state.customLevels = await loadCustomLevels();
+    state.solved = await loadSolved();
+    render();
+  }
+}
+
+init();
+</script>
+</body>
+</html>
