@@ -41,3 +41,4 @@ Zen-Nonogram/
 ├── index.html   ← the entire game (HTML + CSS + JS)
 └── README.md
 ```
+ https://n1x-plut0.github.io/Zen-Nonogram-3.0/
